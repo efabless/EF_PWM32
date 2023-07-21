@@ -41,7 +41,7 @@ class SLAVE(COMP):
 
     def check_bus_type(self, bus):
         if bus not in BUS.BUS_TYPEs:
-            raise("Unsupported bus type for the slave")
+            raise Exception("Unsupported bus type for the slave")
 
 class MASTER(COMP):
     def __init__(self):
