@@ -1,6 +1,7 @@
 from amba import *
 from iplib import *
 from pysoc import *
+from cuproj import *
 
 
 #my_tmr0 = EF_TMR32(name="S0", bus_type="ahbl")
@@ -41,9 +42,17 @@ my_soc.add_comp(hs_bus)
 #my_soc.print()
 
 #ahb_bus = AHBL(name="AHBL_BUS", type=BUS.AHBL, base=0, num_pages=16)
-hs_bus.gen_bus_logic()
-ls_bus0.gen_bus_logic()
-ls_bus1.gen_bus_logic()
-#hs_bus.print_slaves()
-hs_bus.print()
-#print(hs_bus.get_pins())
+#hs_bus.gen_bus_logic()
+#ls_bus0.gen_bus_logic()
+#ls_bus1.gen_bus_logic()
+#hs_bus.print()
+#my_soc.print()
+
+pinmap = [
+    ('flash', 'sck', [10]),
+    ('flash', 'csn', [11]),
+    ('flash', 'io', [12, 13, 14, 15])
+]
+
+my_cup = CUPROJ(name="soc", type=CUPROJ.CARAVEL)
+my_cup.add_design(design=my_soc, pinmap=pinmap)

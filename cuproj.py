@@ -2,10 +2,12 @@ class CUPROJ:
     CARAVEL = 0
     CARAVAN = 1
     OPENFRAME = 2
-    num_of_pins = [38, 38, 50]
+    num_of_pins = [38, 38, 44]
 
     def __init__(self, name, type=CARAVEL):
         self.name = name
+        if type not in range(3):
+            raise Exception(f"Invalid chip type: {type}")
         self.type = type
         self.design = None
         self.pimap = None
