@@ -27,7 +27,6 @@ class Port:
             print(f"\tassign\t{self.name} = {self.value};")
     
     
-    
 class Wire:
     
     def __init__(self, name, size):
@@ -324,8 +323,8 @@ class Wrapper:
         print("`default_nettype\tnone")
 
     def print_license(self):
-        if "MIT" in self.lic:
             print(f"/*\n\tCopyright {datetime.date.today().year} {self.author}\n")
+        if "MIT" in self.lic:
             print("\tPermission is hereby granted, free of charge, to any person obtaining")
             print("\ta copy of this software and associated documentation files (the")
             print("\t\"Software\"), to deal in the Software without restriction, including")
@@ -343,8 +342,35 @@ class Wrapper:
             print("\tNONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS BE")
             print("\tLIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION")
             print("\tOF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION")
-            print("\tWITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.\n*/\n\n")
-            
+            print("\tWITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.")
+        elif "APACHE 2.0" is self.lic:
+            print("\tLicensed under the Apache License, Version 2.0 (the "License");")
+            print("\tyou may not use this file except in compliance with the License.")
+            print("\tYou may obtain a copy of the License at\n")
+            print("\t    http://www.apache.org/licenses/LICENSE-2.0\n")
+            print("\tUnless required by applicable law or agreed to in writing, software")
+            print("\tdistributed under the License is distributed on an "AS IS" BASIS,")
+            print("\tWITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.")
+            print("\tSee the License for the specific language governing permissions and")
+            print("\tlimitations under the License.")
+        elif "BSD" is in self.lic:
+            print("\tRedistribution and use in source and binary forms, with or without modification,") 
+            print("\tare permitted provided that the following conditions are met:\n")
+            print("\t1. Redistributions of source code must retain the above copyright notice,") 
+            print("\tthis list of conditions and the following disclaimer.\n")
+            print(f"\tTHIS SOFTWARE IS PROVIDED BY {self.author} “AS IS” AND ANY EXPRESS OR ")
+            print("\tIMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED WARRANTIES OF ")
+            print("\tMERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE DISCLAIMED. IN NO EVENT ")
+            print(f"\tSHALL {self.author} BE LIABLE FOR ANY DIRECT, INDIRECT, INCIDENTAL, ")
+            print("\tSPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES (INCLUDING, BUT NOT LIMITED TO, ")
+            print("\tPROCUREMENT OF SUBSTITUTE GOODS OR SERVICES; LOSS OF USE, DATA, OR PROFITS; ")
+            print("\tOR BUSINESS INTERRUPTION) HOWEVER CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER ")
+            print("\tIN CONTRACT, STRICT LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING ")
+            print("\tIN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF ")
+            print("\tSUCH DAMAGE.")
+        print("\n*/\n\n")
+    
+
     def add_interface(self, ports):
         for p in ports:
             self.wrapper.add_port(p)    
