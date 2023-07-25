@@ -323,7 +323,8 @@ class Wrapper:
         print("`default_nettype\tnone")
 
     def print_license(self):
-            print(f"/*\n\tCopyright {datetime.date.today().year} {self.author}\n")
+        print(f"/*\n\tCopyright {datetime.date.today().year} {self.author}\n")
+
         if "MIT" in self.lic:
             print("\tPermission is hereby granted, free of charge, to any person obtaining")
             print("\ta copy of this software and associated documentation files (the")
@@ -343,22 +344,22 @@ class Wrapper:
             print("\tLIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION")
             print("\tOF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION")
             print("\tWITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.")
-        elif "APACHE 2.0" is self.lic:
-            print("\tLicensed under the Apache License, Version 2.0 (the "License");")
+        elif "APACHE 2.0" in self.lic:
+            print("\tLicensed under the Apache License, Version 2.0 (the \"License\");")
             print("\tyou may not use this file except in compliance with the License.")
             print("\tYou may obtain a copy of the License at\n")
             print("\t    http://www.apache.org/licenses/LICENSE-2.0\n")
             print("\tUnless required by applicable law or agreed to in writing, software")
-            print("\tdistributed under the License is distributed on an "AS IS" BASIS,")
+            print("\tdistributed under the License is distributed on an \"AS IS\" BASIS,")
             print("\tWITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.")
             print("\tSee the License for the specific language governing permissions and")
             print("\tlimitations under the License.")
-        elif "BSD" is in self.lic:
+        elif "BSD" in self.lic:
             print("\tRedistribution and use in source and binary forms, with or without modification,") 
             print("\tare permitted provided that the following conditions are met:\n")
             print("\t1. Redistributions of source code must retain the above copyright notice,") 
             print("\tthis list of conditions and the following disclaimer.\n")
-            print(f"\tTHIS SOFTWARE IS PROVIDED BY {self.author} “AS IS” AND ANY EXPRESS OR ")
+            print(f"\tTHIS SOFTWARE IS PROVIDED BY {self.author} \“AS IS\” AND ANY EXPRESS OR ")
             print("\tIMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED WARRANTIES OF ")
             print("\tMERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE DISCLAIMED. IN NO EVENT ")
             print(f"\tSHALL {self.author} BE LIABLE FOR ANY DIRECT, INDIRECT, INCIDENTAL, ")
@@ -456,7 +457,7 @@ class AHBL_Wrapper(Wrapper):
 
     def print_front_matter(self):
         super().print_front_matter()
-        print("\n`define\t\tAHB_BLOCK(name, init)\talways @(posedge HCLK or negedge HRESETn) if(~PRESETn) name <= init;")
+        print("\n`define\t\tAHB_BLOCK(name, init)\talways @(posedge HCLK or negedge HRESETn) if(~HRESETn) name <= init;")
         print("`define\t\tAHB_REG(name, init)\t\t`AHB_BLOCK(name, init) else if(ahb_we & (last_HADDR==``name``_ADDR)) name <= HWDATA;")
         print("`define\t\tAHB_ICR(sz)\t\t\t\t`AHB_BLOCK(ICR_REG, sz'b0) else if(ahbl_we & (last_HADDR==ICR_REG_ADDR)) ICR_REG <= HWDATA; else ICR_REG <= sz'd0;\n")
         
@@ -529,8 +530,9 @@ class APB_Wrapper(Wrapper):
         
     def print_front_matter(self):
         super().print_front_matter()
-        print("\n`define\t\tAPB_REG(name, init_value)    always @(posedge PCLK or negedge PRESETn) if(~PRESETn) name <= init_value; else if(apb_we & (PADDR==``name``_ADDR)) name <= PWDATA;")
-        print("`define\t\tAPB_ICR(sz)    always @(posedge PCLK or negedge PRESETn) if(~PRESETn) name <= sz'b0; else if(apb_we & (PADDR==ICR_REG_ADDR)) ICR_REG <= PWDATA; else ICR_REG <= sz'd0;\n")
+        print("\n`define\t\tABP_BLOCK(name, init)\talways @(posedge PCLK or negedge PRESETn) if(~PRESETn) name <= init;")
+        print("`define\t\tAPB_REG(name, init)\t\t`APB_BLOCK(name, init) else if(apb_we & (PADDR==``name``_ADDR)) name <= PWDATA;")
+        print("`define\t\tAPB_ICR(sz)\t\t\t\t`APB_BLOCK(ICR_REG, sz'b0) else if(apb_we & (PADDR==ICR_REG_ADDR)) ICR_REG <= PWDATA; else ICR_REG <= sz'd0;\n")
         
     def print_ICR_REG(self):
         sz=self.ip.get_num_flags()
@@ -608,8 +610,9 @@ class WB_Wrapper(Wrapper):
         
     def print_front_matter(self):
         super().print_front_matter()
-        print("`define\t\t\tWB_REG(name, init_value)    always @(posedge clk_i or posedge rst_i) if(rst_i) name <= init_value; else if(wb_we & (adr_i==``name``_ADDR)) name <= dat_i;")
-        print("`define\t\tWB_ICR(sz)    always @(posedge clk_i or posedge rst_i) if(rst_i) name <= sz'b0; else if(we_we & (adr_i==ICR_REG_ADDR)) ICR_REG <= dat_i; else ICR_REG <= sz'd0;\n")
+        print("\n`define\t\tWB_BLOCK(name, init)\talways @(posedge clk_i or posedge rst_i) if(rst_i) name <= init;")
+        print("`define\t\tWB_REG(name, init)\t\t`WB_BLOCK(name, init) else if(wb_we & (adr_i==``name``_ADDR)) name <= dat_i;")
+        print("`define\t\tWB_ICR(sz)\t\t\t\t`WB_BLOCK(ICR_REG, sz'b0) else if(we_we & (adr_i==ICR_REG_ADDR)) ICR_REG <= dat_i; else ICR_REG <= sz'd0;\n")
  
     def print_ICR_REG(self):
         sz=self.ip.get_num_flags()
