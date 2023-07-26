@@ -318,7 +318,7 @@ class Wrapper:
         for lp in ip.get_localparams():
             self.wrapper.add_localparam(lp.set_size(int(math.log2(self.page_size))))
             v = v + 4
-        if self.ip.has_flags:
+        if self.ip.has_flags():
             self.wrapper.add_localparam(LocalParam(name="ICR_REG_ADDR", size=int(math.log2(self.page_size)), value = 0xF00))
             self.wrapper.add_localparam(LocalParam(name="RIS_REG_ADDR", size=int(math.log2(self.page_size)), value = 0xF04))
             self.wrapper.add_localparam(LocalParam(name="IM_REG_ADDR", size=int(math.log2(self.page_size)), value = 0xF08))
@@ -417,8 +417,6 @@ class Wrapper:
                 if int(f['size']) != 32:
                     print(f"#define {ip_nm}_{r['name'].upper()}_REG_{f['name'].upper()}\t\t{f['from']}")
                     print(f"#define {ip_nm}_{r['name'].upper()}_REG_{f['name'].upper()}_LEN\t{f['size']}")
-                    
-
         print()
         for p in self.ip.localparams:
             print(f"volatile unsigned int * {ip_nm.lower()}_{p.name.lower()}\t= (volatile unsigned int *) {ip_nm}_{p.name};") 
