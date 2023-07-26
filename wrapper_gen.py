@@ -449,9 +449,9 @@ class AHBL_Wrapper(Wrapper):
 
         self.valid.assign("last_HSEL & last_HTRANS[1]")
         self.wrapper.add_wire(self.valid)
-        self.we.assign("HWRITE & ahbl_valid")
+        self.we.assign("last_HWRITE & ahbl_valid")
         self.wrapper.add_wire(self.we)
-        self.re.assign("~HWRITE & ahbl_valid")
+        self.re.assign("~last_HWRITE & ahbl_valid")
         self.wrapper.add_wire(self.re)
         
         self._clk_.assign("HCLK")
@@ -471,7 +471,7 @@ class AHBL_Wrapper(Wrapper):
         print("\treg             last_HSEL;")
         print("\treg [31:0]      last_HADDR;")
         print("\treg             last_HWRITE;")
-        print("\treg [1:0]       last_HTRANS;") 
+        print("\treg [1:0]       last_HTRANS;\n") 
         print("\talways@ (posedge HCLK) begin")
         print("\t\tif(HREADY) begin")
         print("\t\t\tlast_HSEL       <= HSEL;")
