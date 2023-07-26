@@ -430,7 +430,7 @@ class AHBL_Wrapper(Wrapper):
 
         self.valid.assign("last_HSEL & last_HTRANS[1]")
         self.wrapper.add_wire(self.valid)
-        self.we.assign("HWRITE & ahbl__valid")
+        self.we.assign("HWRITE & ahbl_valid")
         self.wrapper.add_wire(self.we)
         self.re.assign("~HWRITE & ahbl_valid")
         self.wrapper.add_wire(self.re)
@@ -465,7 +465,7 @@ class AHBL_Wrapper(Wrapper):
     def print_front_matter(self):
         super().print_front_matter()
         print("\n`define\t\tAHB_BLOCK(name, init)\talways @(posedge HCLK or negedge HRESETn) if(~HRESETn) name <= init;")
-        print("`define\t\tAHB_REG(name, init)\t\t`AHB_BLOCK(name, init) else if(ahb_we & (last_HADDR==``name``_ADDR)) name <= HWDATA;")
+        print("`define\t\tAHB_REG(name, init)\t\t`AHB_BLOCK(name, init) else if(ahbl_we & (last_HADDR==``name``_ADDR)) name <= HWDATA;")
         print("`define\t\tAHB_ICR(sz)\t\t\t\t`AHB_BLOCK(ICR_REG, sz'b0) else if(ahbl_we & (last_HADDR==ICR_REG_ADDR)) ICR_REG <= HWDATA; else ICR_REG <= sz'd0;\n")
         
     def print_ICR_REG(self):
@@ -508,6 +508,7 @@ class APB_Wrapper(Wrapper):
         self.wrapper.add_port(Port("input", "PADDR", "wire", 32))
         self.wrapper.add_port(Port("input", "PWRITE", "wire", 1))
         self.wrapper.add_port(Port("input", "PSEL", "wire", 1))
+        self.wrapper.add_port(Port("input", "PENABLE", "wire", 1))
         self.wrapper.add_port(Port("input", "PWDATA", "wire", 32))
         self.wrapper.add_port(Port("output", "PRDATA", "wire", 32))
         self.wrapper.add_port(Port("output", "PREADY", "wire", 1))
@@ -537,7 +538,7 @@ class APB_Wrapper(Wrapper):
         
     def print_front_matter(self):
         super().print_front_matter()
-        print("\n`define\t\tABP_BLOCK(name, init)\talways @(posedge PCLK or negedge PRESETn) if(~PRESETn) name <= init;")
+        print("\n`define\t\tAPB_BLOCK(name, init)\talways @(posedge PCLK or negedge PRESETn) if(~PRESETn) name <= init;")
         print("`define\t\tAPB_REG(name, init)\t\t`APB_BLOCK(name, init) else if(apb_we & (PADDR==``name``_ADDR)) name <= PWDATA;")
         print("`define\t\tAPB_ICR(sz)\t\t\t\t`APB_BLOCK(ICR_REG, sz'b0) else if(apb_we & (PADDR==ICR_REG_ADDR)) ICR_REG <= PWDATA; else ICR_REG <= sz'd0;\n")
         
