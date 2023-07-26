@@ -198,6 +198,10 @@ class IP:
         for i in self.data["interface"]:
             p = Port(i["dir"], i["name"], "wire", int(i["size"]))
             ports.append(p)
+            if i["name"] != i["port"]:
+                w = Wire(name=i["port"], size=int(i["size"]))
+                w.assign(value=i["name"])
+                self.wires.append(w)
         return ports
     
     def parse_regs(self):
@@ -213,6 +217,8 @@ class IP:
                     wf.assign(f"{reg_name}[{int(f['from'])+int(f['size'])-1}:{f['from']}]")
                     self.wires.append(wf)
             elif r["mode"] == "ro":
+                w = Wire(r['fields'][0]['port'], int(r['fields'][0]['size']))
+                self.wires.append(w)
                 w = Wire(reg_name, int(r['size']))
                 w.assign(f"{r['fields'][0]['port']}")
                 self.wires.append(w)
@@ -234,7 +240,7 @@ class IP:
             self.ris_value = self.ris_value + f"\t\t\tif(_{flag['name'].upper()}_FLAG_) RIS_REG[{i}] <= 1'b1; else if(ICR_REG[{i}]) RIS_REG[{i}] <= 1'b0;\n"
             i = i+ 1
 
-        isr = Reg(name="ISR_REG", size=sz)
+        isr = Reg(name="RIS_REG", size=sz)
         icr = Reg(name="ICR_REG", size=sz)   
         im = Reg(name="IM_REG", size=sz)
         mis = Wire(name="MIS_REG", size=sz)
@@ -312,10 +318,11 @@ class Wrapper:
         for lp in ip.get_localparams():
             self.wrapper.add_localparam(lp.set_size(int(math.log2(self.page_size))))
             v = v + 4
-        self.wrapper.add_localparam(LocalParam(name="ICR_REG_ADDR", size=int(math.log2(self.page_size)), value = 3840))
-        self.wrapper.add_localparam(LocalParam(name="RIS_REG_ADDR", size=int(math.log2(self.page_size)), value = 3844))
-        self.wrapper.add_localparam(LocalParam(name="IM_REG_ADDR", size=int(math.log2(self.page_size)), value = 3848))
-        self.wrapper.add_localparam(LocalParam(name="MIS_REG_ADDR", size=int(math.log2(self.page_size)), value = 3852))
+        if self.ip.has_flags:
+            self.wrapper.add_localparam(LocalParam(name="ICR_REG_ADDR", size=int(math.log2(self.page_size)), value = 3840))
+            self.wrapper.add_localparam(LocalParam(name="RIS_REG_ADDR", size=int(math.log2(self.page_size)), value = 3844))
+            self.wrapper.add_localparam(LocalParam(name="IM_REG_ADDR", size=int(math.log2(self.page_size)), value = 3848))
+            self.wrapper.add_localparam(LocalParam(name="MIS_REG_ADDR", size=int(math.log2(self.page_size)), value = 3852))
         
 
     def print_front_matter(self):
@@ -468,7 +475,7 @@ class AHBL_Wrapper(Wrapper):
     def print(self):
         super().print()
         for r in self.wrapper.regs:
-            if r.name not in ["ISR_REG", "ICR_REG", "IM_REG"]:
+            if r.name not in ["RIS_REG", "ICR_REG", "IM_REG"]:
                 print(f"\t`AHB_REG({r.name}, {r.init})")
         
         if self.ip.has_flags:
@@ -541,7 +548,7 @@ class APB_Wrapper(Wrapper):
     def print(self):
         super().print()
         for r in self.wrapper.regs:
-            if r.name not in ["ISR_REG", "ICR_REG", "IM_REG"]:
+            if r.name not in ["RIS_REG", "ICR_REG", "IM_REG"]:
                 print(f"\t`APB_REG({r.name}, {r.init})")
         
         if self.ip.has_flags:
@@ -580,7 +587,7 @@ class WB_Wrapper(Wrapper):
         self.wrapper.add_port(Port("input", "sel_i", "wire", 4));
         self.wrapper.add_port(Port("input", "cyc_i", "wire", 1));
         self.wrapper.add_port(Port("input", "stb_i", "wire", 1));
-        self.wrapper.add_port(Port("output", "ack_o", "wire", 1));
+        self.wrapper.add_port(Port("output", "ack_o", "reg", 1));
         self.wrapper.add_port(Port("input", "we_i", "wire", 1));
 
         if ip.has_flags():
@@ -612,7 +619,7 @@ class WB_Wrapper(Wrapper):
         super().print_front_matter()
         print("\n`define\t\tWB_BLOCK(name, init)\talways @(posedge clk_i or posedge rst_i) if(rst_i) name <= init;")
         print("`define\t\tWB_REG(name, init)\t\t`WB_BLOCK(name, init) else if(wb_we & (adr_i==``name``_ADDR)) name <= dat_i;")
-        print("`define\t\tWB_ICR(sz)\t\t\t\t`WB_BLOCK(ICR_REG, sz'b0) else if(we_we & (adr_i==ICR_REG_ADDR)) ICR_REG <= dat_i; else ICR_REG <= sz'd0;\n")
+        print("`define\t\tWB_ICR(sz)\t\t\t\t`WB_BLOCK(ICR_REG, sz'b0) else if(wb_we & (adr_i==ICR_REG_ADDR)) ICR_REG <= dat_i; else ICR_REG <= sz'd0;\n")
  
     def print_ICR_REG(self):
         sz=self.ip.get_num_flags()
@@ -628,13 +635,13 @@ class WB_Wrapper(Wrapper):
         print("\t\t\telse\n\t\t\t\tack_o <= 1'b0;\n")
 
         for r in self.wrapper.regs:
-            if r.name not in ["ISR_REG", "ICR_REG", "IM_REG"]:
+            if r.name not in ["RIS_REG", "ICR_REG", "IM_REG"]:
                 print(f"\t`WB_REG({r.name}, {r.init})")
         if self.ip.has_flags:
             print()
             self.print_ICR_REG()
-            print("\n\talways @(posedge PCLK or negedge PRESETn)")
-            print("\t\tif(~PRESETn) RIS_REG <= 32'd0;")
+            print("\n\talways @ (posedge clk_i or posedge rst_i)")
+            print("\t\tif(rst_i) RIS_REG <= 32'd0;")
             print("\t\telse begin")
             print(self.ip.get_ris_value())
             print("\t\tend\n")
