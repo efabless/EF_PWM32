@@ -42,6 +42,20 @@
             ]
         },
         {
+            "name": "ctr_match",
+            "size": "32",
+            "mode": "rw",
+            "init": "0",
+            "fields": [
+                {
+                    "name": "ctr_match",
+                    "from": "0",
+                    "size": "32",
+                    "port": "ctr_match"
+                }
+            ]
+        },
+        {
             "name": "pwmcmp",
             "size": "32",
             "mode": "rw",
