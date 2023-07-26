@@ -319,10 +319,10 @@ class Wrapper:
             self.wrapper.add_localparam(lp.set_size(int(math.log2(self.page_size))))
             v = v + 4
         if self.ip.has_flags:
-            self.wrapper.add_localparam(LocalParam(name="ICR_REG_ADDR", size=int(math.log2(self.page_size)), value = 3840))
-            self.wrapper.add_localparam(LocalParam(name="RIS_REG_ADDR", size=int(math.log2(self.page_size)), value = 3844))
-            self.wrapper.add_localparam(LocalParam(name="IM_REG_ADDR", size=int(math.log2(self.page_size)), value = 3848))
-            self.wrapper.add_localparam(LocalParam(name="MIS_REG_ADDR", size=int(math.log2(self.page_size)), value = 3852))
+            self.wrapper.add_localparam(LocalParam(name="ICR_REG_ADDR", size=int(math.log2(self.page_size)), value = 0xF00))
+            self.wrapper.add_localparam(LocalParam(name="RIS_REG_ADDR", size=int(math.log2(self.page_size)), value = 0xF04))
+            self.wrapper.add_localparam(LocalParam(name="IM_REG_ADDR", size=int(math.log2(self.page_size)), value = 0xF08))
+            self.wrapper.add_localparam(LocalParam(name="MIS_REG_ADDR", size=int(math.log2(self.page_size)), value = 0xF0C))
         
 
     def print_front_matter(self):
@@ -404,6 +404,25 @@ class Wrapper:
         self.wrapper.print_regs()
         self.wrapper.print_wires()
         print(self.inst)
+
+    def gen_driver(self):
+        ip_nm = self.ip.data['name'].upper()
+        self.print_license()
+        print(f"#define {ip_nm}_BASE\t\t\t\t0x00000000\n")
+        for p in self.ip.localparams:
+            print(f"#define\t{ip_nm}_{p.name}\t\t({ip_nm}_BASE+{hex(p.value)})")
+        print()
+        for r in self.ip.data["regs"]:
+            for f in r["fields"]:
+                if int(f['size']) != 32:
+                    print(f"#define {ip_nm}_{r['name'].upper()}_REG_{f['name'].upper()}\t\t{f['from']}")
+                    print(f"#define {ip_nm}_{r['name'].upper()}_REG_{f['name'].upper()}_LEN\t{f['size']}")
+                    
+
+        print()
+        for p in self.ip.localparams:
+            print(f"volatile unsigned int * {ip_nm.lower()}_{p.name.lower()}\t= (volatile unsigned int *) {ip_nm}_{p.name};") 
+
 
 class AHBL_Wrapper(Wrapper):
     valid = Wire("ahbl_valid", 1)
@@ -653,21 +672,31 @@ class WB_Wrapper(Wrapper):
         print("endmodule")
         
 if len(sys.argv) < 3 or len(sys.argv) > 4:
-    sys.exit("use: wrapper_gen.py ip.json [AHBL|APB|WB]")
+    sys.exit("use: wrapper_gen.py ip.json [-drv] AHBL|APB|WB")
 
-if sys.argv[2] not in ["AHBL", "WB", "APB"]:
-    sys.exit("Unsupported bus type {sys.argv[2]}.\nuse: wrapper_gen.py ip.json [AHBL|APB|WB]")
+if len(sys.argv) == 3:
+    bus = sys.argv[2]
+else:
+    bus = sys.argv[3]
+    if sys.argv[2] != "-drv":
+        sys.exit(f"Unsupported argument {sys.argv[2]}.\nuse: wrapper_gen.py ip.json [-drv] AHBL|APB|WB")
+
+if bus not in ["AHBL", "WB", "APB"]:
+    sys.exit(f"Unsupported bus type {sys.argv[2]}.\nuse: wrapper_gen.py ip.json [-drv] AHBL|APB|WB")
 
 if not os.path.isfile(sys.argv[1]):
-    sys.exit("File not found ({sys.argv[1]}).\nuse: wrapper_gen.py ip.json [AHBL|APB|WB]")
+    sys.exit(f"File not found ({sys.argv[1]}).\nuse: wrapper_gen.py ip.json [-drv] AHBL|APB|WB")
 
 ip = IP(sys.argv[1])
 
-if sys.argv[2] == "WB":
+if bus == "WB":
     w = WB_Wrapper(ip)
-elif sys.argv[2] == "AHBL":
+elif bus == "AHBL":
     w = AHBL_Wrapper(ip)
-elif sys.argv[2] == "APB":
+elif bus == "APB":
     w = APB_Wrapper(ip)
 
-w.print()
+if len(sys.argv) == 3:
+    w.print()
+else:
+    w.gen_driver()
