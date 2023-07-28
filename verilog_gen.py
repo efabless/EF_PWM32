@@ -14,8 +14,8 @@ class Port:
         if self.size > 1:
             range = f"[{self.size -1}:0]"
         else:
-            range = ""
-        print(f"\t{self.dir}\t{self.type}\t{range}\t{self.name}", end="")
+            range = "\t"
+        print(f"\t{self.dir}\t{self.type}{range}\t{self.name}", end="")
     
     def print_assign(self):
         if self.value != "":
@@ -35,11 +35,11 @@ class Wire:
         if self.size > 1:
             range = f"[{self.size -1}:0]"
         else:
-            range = ""
+            range = "\t"
         if self.value == "":
-            print(f"\twire\t{range}\t{self.name};");
+            print(f"\twire{range}\t{self.name};");
         else:
-            print(f"\twire\t{range}\t{self.name}\t= {self.value};");
+            print(f"\twire{range}\t{self.name}\t= {self.value};");
         
 
 class Reg:
@@ -162,7 +162,7 @@ class Module:
         print("")
 
     def print_footer(self):
-        print("endmodule")
+        print("\nendmodule")
 
     def print_wires(self):
         for w in self.wires:
