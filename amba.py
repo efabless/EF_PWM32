@@ -3,6 +3,106 @@ from comp import *
 from verilog_gen import *
 import math
 
+class AHBLSLAVE(SLAVE):
+    def __init__(self):
+        super().__init__()
+
+    def print_bus_ifc(self, i):
+        print(f"\t\t.HCLK(HCLK),")
+        print(f"\t\t.HRESETn(HRESETn),")
+        print(f"\t\t.HADDR(HADDR),")
+        print(f"\t\t.HWDATA(HWDATA),")
+        print(f"\t\t.HWRITE(HWRITE),")
+        print(f"\t\t.HTRANS(HTRANS),")
+        print(f"\t\t.HSIZE(HSIZE),")
+        print(f"\t\t.HREADY(HREADY),")
+        print(f"\t\t.HSEL(HSEL_S{i}),")
+        print(f"\t\t.HREADYOUT(HREADYOUT_S{i}),")
+        print(f"\t\t.HRDATA(HRDATA_S{i})", end="")
+
+
+class APBSLAVE(SLAVE):
+    def __init__(self):
+        super().__init__()
+
+    def print_bus_ifc(self, i):
+        print(f"\t\t.PCLK(PCLK),")
+        print(f"\t\t.PRESETn(PRESETn),")
+        print(f"\t\t.PSEL(PSEL_S{i}),")
+        print(f"\t\t.PADDR(PADDR[11:2]),")
+        print(f"\t\t.PREADY(PREADY_S{i}),")
+        print(f"\t\t.PWRITE(PWRITE),")
+        print(f"\t\t.PWDATA(PWDATA),")
+        print(f"\t\t.PRDATA(PRDATA_S{i}),")
+        print(f"\t\t.PENABLE(PENABLE)", end="")
+
+class AHBLMASTER(MASTER):
+    def __init__(self):
+        super().__init__()
+
+    def print_bus_ifc(self):
+        print(f"\t\t.HCLK(HCLK),")
+        print(f"\t\t.HRESETn(HRESETn),")
+        print(f"\t\t.HADDR(HADDR),")
+        print(f"\t\t.HWDATA(HWDATA),")
+        print(f"\t\t.HWRITE(HWRITE),")
+        print(f"\t\t.HTRANS(HTRANS),")
+        print(f"\t\t.HREADY(HREADY),")
+        print(f"\t\t.HRDATA(HRDATA)", end="")
+
+
+class APBMASTER(MASTER):
+    def __init__(self):
+        super().__init__()
+
+    def print_bus_ifc(self):
+        nal = self.get_num_addr_lines()
+        print(f"\t\t.PCLKEN(PCLKEN)")
+        print(f"\t\t.PCLK(PCLK),")
+        print(f"\t\t.PRESETn(PRESETn),")
+        print(f"\t\t.PADDR(PADDR[{nal-1}:0]),")
+        print(f"\t\t.PSEL(PSEL),")
+        print(f"\t\t.PWRITE(PWRITE),")
+        print(f"\t\t.PWDATA(PWDATA),")
+        print(f"\t\t.PENABLE(PENABLE),")
+        print(f"\t\t.PREADY(PREADY),")
+        print(f"\t\t.PRDATA(PRDATA)")
+        #print(f"\t\t.PSLVERR(1'b0)", end="")
+
+class AHBL2APB(APBMASTER, AHBLSLAVE, BUSBRIDGE):
+    def __init__(self, sbus, name):
+        super().__init__()
+        self.sbus = sbus
+        self.name = name
+        self.module = "AHBL2APB"
+        
+    def gen_inst(self, i):
+        self.print_header()
+        AHBLSLAVE.print_bus_ifc(self, i)
+        print(",")
+        APBMASTER.print_bus_ifc(self)
+        if len(self.pins) > 0:
+            print(",")
+            self.print_pins(i)
+        print("\t);")
+
+    def set_space(self, space):
+        self.space = space
+
+class AHBL_MMUX:
+    port0 = BUS(name="b0")
+    port1 = BUS(name="b1")
+    outport = BUS(name="b2")
+    name = ""
+    def __init__(self, name, port0, port1, outport):
+        self.port0 = port0
+        self.port1 = port1
+        self.outport = outport
+        self.name = name
+    
+    def print(self):
+        print(self.name,": AHBL Master MUX (2x1)")
+
 
 class AHBL(BUS):
     def __init__(self, name, base=0, num_pages=8):
@@ -26,8 +126,8 @@ class AHBL(BUS):
         n = int(math.log2(self.num_pages))
         p_f = 32 - n
         p_t = 31
-        self.mod.add_wire(Wire(name="page", size=n, value=f"HADDR[{p_t}:{p_f}]"))
-        self.mod.add_reg(Reg(name="apage", size=n).set_rst_pol(pol=0).always(clk="HCLK", rst="HRESETn", init="0", value="page"))
+        #self.mod.add_wire(Wire(name="page", size=n, value=f"HADDR[{p_t}:{p_f}]"))
+        self.mod.add_reg(Reg(name="apage", size=n).set_rst_pol(pol=0).always(clk="HCLK", rst="HRESETn", init="0", value=f"HADDR[{p_t}:{p_f}]"))
         for s in self.slaves:
             (slave, page, num) = s
             self.mod.add_localparam(LocalParam(name=f"S{str(i)}_PAGE", size=n, value=page ))
@@ -39,16 +139,20 @@ class AHBL(BUS):
         i = 0
         for s in self.slaves:
             dmux.add_case(sel_value=f"S{i}_PAGE", value=f"HRDATA_S{i}")
-            rmux.add_case(sel_value=f"S{i}_PAGE", value=f"HREADY_S{i}")
+            rmux.add_case(sel_value=f"S{i}_PAGE", value=f"HREADYOUT_S{i}")
             i = i + 1
         dmux.print()
         rmux.print()
         
     def gen_slave_instances(self):
         i = 0;
+        lsb = 0
         for slave in self.slaves:
             (s,p,n) = slave
             s.gen_inst(n)
+            if(issubclass(type(s), BUSBRIDGE)):
+                s.sbus.gen_inst(f"lsbus{lsb}")
+                lsb = lsb + 1
             i = i + 1
 
     def gen_bus_logic(self):
@@ -57,7 +161,7 @@ class AHBL(BUS):
         for s in self.slaves:
             (slave, page, num) = s
             w = Wire(name="HSEL_S"+str(i), size=1)
-            w.assign(f"HSEL & (page == S{i}_PAGE)")
+            w.assign(f"(apage == S{i}_PAGE)")
             self.mod.add_wire(w)
             self.mod.add_wire(Wire(name="HREADY_S"+str(i), size=1))
             self.mod.add_wire(Wire(name="HRDATA_S"+str(i), size=32))
@@ -74,17 +178,67 @@ class AHBL(BUS):
                     self.mod.add_port(Port(name=f"{slave.name}_{name}_in", dir="input", type="wire", size=s))
                     self.mod.add_port(Port(name=f"{slave.name}_{name}_out", dir="output", type="wire", size=s))
                     self.mod.add_port(Port(name=f"{slave.name}_{name}_outen", dir="output", type="wire", size=s))
+            if(issubclass(type(slave), BUSBRIDGE)):
+                # Add wires
+                self.mod.add_wire(Wire(name="PCLKEN",size=1, value="1'b1"))
+                self.mod.add_wire(Wire(name="PCLK",size=1))
+                self.mod.add_wire(Wire(name="PRESETn",size=1))
+                self.mod.add_wire(Wire(name="PSEL",size=1))
+                self.mod.add_wire(Wire(name="PENABLE",size=1))
+                self.mod.add_wire(Wire(name="PWRITE",size=1))
+                self.mod.add_wire(Wire(name="PREADY",size=1))
+                self.mod.add_wire(Wire(name="PADDR",size=slave.get_num_addr_lines()))
+                self.mod.add_wire(Wire(name="PWDATA",size=32))
+                self.mod.add_wire(Wire(name="PRDATA",size=32))
+                # Add pins
+                for p in slave.sbus.get_pins():
+                    (sn, pn, s, d) = p
+                    dir = "output"
+                    if d == 1:
+                        dir = "input"
+                    elif d == 2:
+                        dir = "inout"
+                    if d != 2:
+                        self.mod.add_port(Port(name=f"{sn}_{pn}", dir=dir, type="wire", size=s))
+                    else:
+                        self.mod.add_port(Port(name=f"{sn}_{pn}_in", dir="input", type="wire", size=s))
+                        self.mod.add_port(Port(name=f"{sn}_{pn}_out", dir="output", type="wire", size=s))
+                        self.mod.add_port(Port(name=f"{sn}_{pn}_outen", dir="output", type="wire", size=s))
             i=i+1
-        
         self.gen_bus_dec()
         self.mod.print_header()
         self.mod.print_localparams()
-        self.mod.print_wires()
         self.mod.print_regs()
+        self.mod.print_wires()
         self.gen_bus_mux()
         self.mod.print_ports_assign()
         self.gen_slave_instances()
         self.mod.print_footer()
+
+    def gen_inst(self, inst_name):
+        print(f"\t{self.name} {inst_name}(")
+        print(f"\t\t.HCLK(HCLK),")
+        print(f"\t\t.HRESETn(HRESETn),")
+        print(f"\t\t.HADDR(HADDR),")
+        print(f"\t\t.HWDATA(HWDATA),")
+        print(f"\t\t.HWRITE(HWRITE),")
+        print(f"\t\t.HTRANS(HTRANS),")
+        print(f"\t\t.HSIZE(HSIZE),")
+        print(f"\t\t.HREADY(HREADY),")
+        print(f"\t\t.HRDATA(HRDATA)", end="")
+        if len(self.get_pins()) > 0:
+            x = 0
+            last = len(self.get_pins()) - 1
+            print(",")
+            for p in self.get_pins():
+                (s, nm, d, sz) = p
+                print(f"\t\t.{s}_{nm}({s}_{nm})", end="")
+                if x == last:
+                    print()
+                else:
+                    print(",") 
+                x = x + 1 
+        print("\t);\n")
 
 '''
     APB Class
@@ -176,102 +330,26 @@ class APB(BUS):
         self.gen_slave_instances()
         self.mod.print_footer()
 
-class AHBLSLAVE(SLAVE):
-    def __init__(self):
-        super().__init__()
-
-    def print_bus_ifc(self, i):
-        print(f"\t\t.HCLK(HCLK),")
-        print(f"\t\t.HRESETn(HRESETn),")
-        print(f"\t\t.HADDR(HADDR),")
-        print(f"\t\t.HWDATA(HWDATA),")
-        print(f"\t\t.HWRITE(HWRITE),")
-        print(f"\t\t.HTRANS(HTRANS),")
-        print(f"\t\t.HSIZE(HSIZE),")
-        print(f"\t\t.HSEL(HSEL_S{i}),")
-        print(f"\t\t.HREADY(HREADY_S{i}),")
-        print(f"\t\t.HRDATA(HRDATA_S{i})", end="")
-
-class APBSLAVE(SLAVE):
-    def __init__(self):
-        super().__init__()
-
-    def print_bus_ifc(self, i):
+    def gen_inst(self, inst_name):
+        print(f"\t{self.name} {inst_name}(")
         print(f"\t\t.PCLK(PCLK),")
         print(f"\t\t.PRESETn(PRESETn),")
-        print(f"\t\t.PSEL(PSEL_S{i}),")
-        print(f"\t\t.PADDR(PADDR[11:2]),")
-        print(f"\t\t.PREADY(PREADY_S{i}),")
-        print(f"\t\t.PWRITE(PWRITE),")
+        print(f"\t\t.PADDR(PADDR),")
         print(f"\t\t.PWDATA(PWDATA),")
-        print(f"\t\t.PRDATA(PRDATA_S{i}),")
-        print(f"\t\t.PENABLE(PENABLE)", end="")
-
-class AHBLMASTER(MASTER):
-    def __init__(self):
-        super().__init__()
-
-    def print_bus_ifc(self):
-        print(f"\t\t.HCLK(HCLK),")
-        print(f"\t\t.HRESETn(HRESETn),")
-        print(f"\t\t.HADDR(HADDR),")
-        print(f"\t\t.HWDATA(HWDATA),")
-        print(f"\t\t.HWRITE(HWRITE),")
-        print(f"\t\t.HTRANS(HTRANS),")
-        print(f"\t\t.HSIZE(HSIZE),")
-        print(f"\t\t.HSEL(HSEL),")
-        print(f"\t\t.HREADY(HREADY),")
-        print(f"\t\t.HRDATA(HRDATA)", end="")
-
-
-class APBMASTER(MASTER):
-    def __init__(self):
-        super().__init__()
-
-    def print_bus_ifc(self):
-        nal = self.get_num_addr_lines()
-        print(f"\t\t.PCLKEN(PCLKEN)")
-        print(f"\t\t.PCLK(PCLK),")
-        print(f"\t\t.PRESETn(PRESETn),")
-        print(f"\t\t.PADDR(PADDR[{nal-1}:0]),")
-        print(f"\t\t.PSEL(PSEL),")
         print(f"\t\t.PWRITE(PWRITE),")
-        print(f"\t\t.PWDATA(PWDATA[31:0]),")
         print(f"\t\t.PENABLE(PENABLE),")
         print(f"\t\t.PREADY(PREADY),")
-        print(f"\t\t.PRDATA(PRDATA[31:0])")
-        #print(f"\t\t.PSLVERR(1'b0)", end="")
-
-class AHBL2APB(APBMASTER, AHBLSLAVE, BUSBRIDGE):
-    def __init__(self, sbus, name):
-        super().__init__()
-        self.sbus = sbus
-        self.name = name
-        self.module = "AHBL2APB"
-        
-    def gen_inst(self, i):
-        self.print_header()
-        AHBLSLAVE.print_bus_ifc(self, i)
-        print(",")
-        APBMASTER.print_bus_ifc(self)
-        if len(self.pins) > 0:
+        print(f"\t\t.PRDATA(PRDATA)", end="")
+        if len(self.get_pins()) > 0:
+            x = 0
+            last = len(self.get_pins()) - 1
             print(",")
-            self.print_pins(i)
-        print("\t);")
-
-    def set_space(self, space):
-        self.space = space
-
-class AHBL_MMUX:
-    port0 = BUS(name="b0")
-    port1 = BUS(name="b1")
-    outport = BUS(name="b2")
-    name = ""
-    def __init__(self, name, port0, port1, outport):
-        self.port0 = port0
-        self.port1 = port1
-        self.outport = outport
-        self.name = name
-    
-    def print(self):
-        print(self.name,": AHBL Master MUX (2x1)")
+            for p in self.get_pins():
+                (s, nm, d, sz) = p
+                print(f"\t\t.{s}_{nm}({s}_{nm})", end="")
+                if x == last:
+                    print()
+                else:
+                    print(",") 
+                x = x + 1 
+        print("\t);\n")
