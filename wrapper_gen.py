@@ -405,8 +405,9 @@ class Wrapper:
         self.wrapper.print_wires()
         print(self.inst)
 
-    def gen_driver(self):
-        ip_nm = self.ip.data['name'].upper()
+    def gen_driver(self, inst_name):
+        #ip_nm = self.ip.data['name'].upper()
+        ip_nm = inst_name.upper()
         self.print_license()
         print(f"#define {ip_nm}_BASE\t\t\t\t0x00000000\n")
         for p in self.ip.localparams:
@@ -670,21 +671,16 @@ class WB_Wrapper(Wrapper):
         
         print("endmodule")
         
-if len(sys.argv) < 3 or len(sys.argv) > 4:
-    sys.exit("use: wrapper_gen.py ip.json [-drv] AHBL|APB|WB")
+if len(sys.argv) < 4:
+    sys.exit("use: wrapper_gen.py ip.json DRV|AHBL|APB|WB IP_instance_name")
 
-if len(sys.argv) == 3:
-    bus = sys.argv[2]
-else:
-    bus = sys.argv[3]
-    if sys.argv[2] != "-drv":
-        sys.exit(f"Unsupported argument {sys.argv[2]}.\nuse: wrapper_gen.py ip.json [-drv] AHBL|APB|WB")
+bus = sys.argv[2]
 
-if bus not in ["AHBL", "WB", "APB"]:
-    sys.exit(f"Unsupported bus type {sys.argv[2]}.\nuse: wrapper_gen.py ip.json [-drv] AHBL|APB|WB")
+if bus not in ["AHBL", "WB", "APB", "DRV"]:
+    sys.exit(f"Unsupported bus type {bus}.\nuse: wrapper_gen.py ip.json DRV|AHBL|APB|WB IP_instance_name")
 
 if not os.path.isfile(sys.argv[1]):
-    sys.exit(f"File not found ({sys.argv[1]}).\nuse: wrapper_gen.py ip.json [-drv] AHBL|APB|WB")
+    sys.exit(f"File not found ({sys.argv[1]}).\nuse: wrapper_gen.py ip.json DRV|AHBL|APB|WB IP_instance_name")
 
 ip = IP(sys.argv[1])
 
@@ -694,8 +690,12 @@ elif bus == "AHBL":
     w = AHBL_Wrapper(ip)
 elif bus == "APB":
     w = APB_Wrapper(ip)
-
-if len(sys.argv) == 3:
-    w.print()
 else:
-    w.gen_driver()
+    w = APB_Wrapper(ip)
+
+if bus == "DRV":
+    w.gen_driver(sys.argv[3])
+else:
+    w.print()
+
+    
