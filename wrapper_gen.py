@@ -657,7 +657,7 @@ class WB_Wrapper(Wrapper):
         for r in self.wrapper.regs:
             if r.name not in ["RIS_REG", "ICR_REG", "IM_REG"]:
                 print(f"\t`WB_REG({r.name}, {r.init})")
-        if self.ip.has_flags:
+        if self.ip.has_flags():
             print()
             self.print_ICR_REG()
             print("\n\talways @ (posedge clk_i or posedge rst_i)")
