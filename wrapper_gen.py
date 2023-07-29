@@ -418,8 +418,9 @@ class Wrapper:
                     print(f"#define {ip_nm}_{r['name'].upper()}_REG_{f['name'].upper()}\t\t{f['from']}")
                     print(f"#define {ip_nm}_{r['name'].upper()}_REG_{f['name'].upper()}_LEN\t{f['size']}")
         print()
-        for p in self.ip.localparams:
-            print(f"volatile unsigned int * {ip_nm.lower()}_{p.name.lower()}\t= (volatile unsigned int *) {ip_nm}_{p.name};") 
+        #for p in self.ip.localparams:
+        for r in self.ip.data["regs"]:
+            print(f"volatile unsigned int * {ip_nm.lower()}_{r['name']}\t= (volatile unsigned int *) {ip_nm}_{r['name'].upper()}_REG_ADDR;") 
 
 
 class AHBL_Wrapper(Wrapper):
