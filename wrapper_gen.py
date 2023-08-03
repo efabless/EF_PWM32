@@ -29,10 +29,10 @@ class Port:
     
 class Wire:
     
-    def __init__(self, name, size):
+    def __init__(self, name, size, value=""):
         self.name = name
         self.size = size
-        self.value = ""
+        self.value = value
         
     def assign(self, value):
         self.value = value
@@ -57,23 +57,26 @@ class Reg:
         self.init = ""
         self.clk = ""
         self.rst = ""
-        self.clk_pol = ""
-        self.rst_pol = ""
+        self.clk_pol = "posedge"
+        self.rst_pol = "negedge"
             
-    def always(self, clk, rst, init, value):
+    def always(self, clk, rst, init, value=""):
         self.value = value
         self.rst = rst
         self.init = init
         self.clk = clk
         
-    def clk_pol(self, pol):
+    def set_clk_pol(self, pol):
         self.clk_pol = pol
         
-    def rst_pol(self, pol):
+    def set_rst_pol(self, pol):
         self.rst_pol = pol
 
     def set_init(self, init):
         self.init = init
+
+    def set_value(self, value):
+        self.value = value
         
     def print_def(self):
         if self.size > 1:
@@ -92,6 +95,9 @@ class Reg:
         print(f"\t\t\t{self.name} <= {self.init};")
         print(f"\t\telse")
         print(f"\t\t\t{self.name} <= {self.value};")
+
+    def print(self):
+        print(f"\treg [{self.size-1}:0] {self.name};")
         
 class LocalParam:
     def __init__(self, name, size, value):
@@ -250,8 +256,6 @@ class IP:
         self.regs.append(im)
         self.wires.append(mis)
 
-        
-
     def get_localparams(self):
         return self.localparams
     
@@ -298,6 +302,8 @@ class IP:
                 inst += ",\n"
         return inst
     
+    def has_fifos(self):
+        return "fifos" in self.data
 
 class Wrapper:
     def __init__(self, ip, page_size=math.pow(2,16)):
@@ -467,6 +473,19 @@ class AHBL_Wrapper(Wrapper):
                 hrdata.add_case(sel_value=w.name+"_ADDR", value=w.name)
         self.wrapper.add_mux(hrdata)
 
+        if self.ip.has_fifos():
+            for f in self.ip.data['fifos']:
+                rd = Wire(name="rd", size=1, value=f"(ahbl_re & (last_HADDR=={f['reg'].upper()}_REG_ADDR))")
+                wr = Wire(name="wr", size=1, value=f"(ahbl_we & (last_HADDR=={f['reg'].upper()}_REG_ADDR))")
+                if f["type"] == "r":
+                    self.wrapper.add_wire(rd)
+                elif f["type"] == "w":
+                    self.wrapper.add_wire(wr)
+                else:
+                    raise Exception(f"Unkown FIFO type ({f['type']})")
+            print()    
+        
+
     def print_epilogue(self):
         print("\treg             last_HSEL;")
         print("\treg [31:0]      last_HADDR;")
@@ -508,9 +527,9 @@ class AHBL_Wrapper(Wrapper):
             print("\tassign irq = |MIS_REG;\n")
 
         self.wrapper.print_muxes()
-
+        
         print("\n\tassign HREADYOUT = 1'b1;\n")
-
+                
         print("endmodule")
     
 class APB_Wrapper(Wrapper):
@@ -554,6 +573,18 @@ class APB_Wrapper(Wrapper):
             if "_REG" in w.name:
                 prdata.add_case(sel_value=w.name+"_ADDR", value=w.name)
         self.wrapper.add_mux(prdata)
+
+        if self.ip.has_fifos():
+            for f in self.ip.data['fifos']:
+                rd = Wire(name="rd", size=1, value=f"(apb_re & (PADDR[15:0]=={f['reg'].upper()}_REG_ADDR))")
+                wr = Wire(name="wr", size=1, value=f"(apb_we & (PADDR[15:0]=={f['reg'].upper()}_REG_ADDR))")
+                if f["type"] == "r":
+                    self.wrapper.add_wire(rd)
+                elif f["type"] == "w":
+                    self.wrapper.add_wire(wr)
+                else:
+                    raise Exception(f"Unkown FIFO type ({f['type']})")
+            print() 
         
     def print_front_matter(self):
         super().print_front_matter()
@@ -567,6 +598,7 @@ class APB_Wrapper(Wrapper):
 
     def print(self):
         super().print()
+   
         for r in self.wrapper.regs:
             if r.name not in ["RIS_REG", "ICR_REG", "IM_REG"]:
                 print(f"\t`APB_REG({r.name}, {r.init})")
@@ -634,6 +666,18 @@ class WB_Wrapper(Wrapper):
             if "_REG" in w.name:
                 dat_o.add_case(sel_value=w.name+"_ADDR", value=w.name)
         self.wrapper.add_mux(dat_o)
+
+        if self.ip.has_fifos():
+            for f in self.ip.data['fifos']:
+                rd = Wire(name="rd", size=1, value=f"(wb_re & (adr_i=={f['reg'].upper()}_REG_ADDR))")
+                wr = Wire(name="wr", size=1, value=f"(wb_we & (adr_i=={f['reg'].upper()}_REG_ADDR))")
+                if f["type"] == "r":
+                    self.wrapper.add_wire(rd)
+                elif f["type"] == "w":
+                    self.wrapper.add_wire(wr)
+                else:
+                    raise Exception(f"Unkown FIFO type ({f['type']})")
+            print() 
         
     def print_front_matter(self):
         super().print_front_matter()
