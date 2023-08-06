@@ -1,0 +1,250 @@
+{
+    "name": "ef_pwm32",
+    "description": "A 32-bit 2CH PWM Generator",
+    "repo": "github.com/efabless/ef_pwm32",
+    "author": "Mohamed Shalan",
+    "email": "mshalan@efabless.com",
+    "version": "0.9",
+    "date": "7-29-2023",
+    "license": "Apache 2.0",
+    "category": "digital",
+    "type": "soft",
+    "status": "np",
+    "width": "0",
+    "height": "0",
+    "cell_count": "730",
+    "regs": [
+        {
+            "name": "cmpA",
+            "size": "32",
+            "mode": "rw",
+            "init": "0",
+            "fields": [
+                {
+                    "name": "cmpA",
+                    "from": "0",
+                    "size": "32",
+                    "port": "cmpA"
+                }
+            ]
+        },
+        {
+            "name": "cmpB",
+            "size": "32",
+            "mode": "rw",
+            "init": "0",
+            "fields": [
+                {
+                    "name": "cmpB",
+                    "from": "0",
+                    "size": "32",
+                    "port": "cmpB"
+                }
+            ]
+        },
+        {
+            "name": "load",
+            "size": "32",
+            "mode": "rw",
+            "init": "0",
+            "fields": [
+                {
+                    "name": "load",
+                    "from": "0",
+                    "size": "32",
+                    "port": "load"
+                }
+            ]
+        },
+        {
+            "name": "clkdiv",
+            "size": "4",
+            "mode": "rw",
+            "init": "0",
+            "fields": [
+                {
+                    "name": "clkdiv",
+                    "from": "0",
+                    "size": "4",
+                    "port": "clkdiv"
+                }
+            ]
+        },
+        {
+            "name": "control",
+            "size": "6",
+            "mode": "rw",
+            "init": "0",
+            "fields": [
+                {
+                    "name": "en",
+                    "from": "0",
+                    "size": "1",
+                    "port": "en"
+                },
+                {
+                    "name": "pwmA_en",
+                    "from": "1",
+                    "size": "1",
+                    "port": "enA"
+                },
+                {
+                    "name": "pwmB_en",
+                    "from": "2",
+                    "size": "1",
+                    "port": "enB"
+                },
+                {
+                    "name": "pwmA_inv",
+                    "from": "3",
+                    "size": "1",
+                    "port": "invA"
+                },
+                {
+                    "name": "pwmBinv",
+                    "from": "4",
+                    "size": "1",
+                    "port": "invB"
+                },
+                {
+                    "name": "cntr_mode",
+                    "from": "5",
+                    "size": "1",
+                    "port": "cntr_mode"
+                }
+            ]
+        },
+        {
+          "name": "GENA",
+          "size": "12",
+          "mode": "rw",
+          "init": "0",
+          "fields": [
+            {
+                "name": "zero",
+                "from": "0",
+                "size": "2",
+                "port": "pwmA_e0a"
+            },
+            {
+                "name": "AUP",
+                "from": "2",
+                "size": "2",
+                "port": "pwmA_e1a"
+            },
+            {
+                "name": "BUP",
+                "from": "4",
+                "size": "2",
+                "port": "pwmA_e2a"
+            },
+            {
+                "name": "load",
+                "from": "6",
+                "size": "2",
+                "port": "pwmA_e3a"
+            },
+            {
+                "name": "BD",
+                "from": "8",
+                "size": "2",
+                "port": "pwmA_e4a"
+            },
+            {
+                "name": "AD",
+                "from": "10",
+                "size": "2",
+                "port": "pwmA_e5a"
+            }
+          ]
+        },
+        {
+            "name": "GENB",
+            "size": "12",
+            "mode": "rw",
+            "init": "0",
+            "fields": [
+              {
+                  "name": "zero",
+                  "from": "0",
+                  "size": "2",
+                  "port": "pwmB_e0a"
+              },
+              {
+                  "name": "AUP",
+                  "from": "2",
+                  "size": "2",
+                  "port": "pwmB_e1a"
+              },
+              {
+                  "name": "BUP",
+                  "from": "4",
+                  "size": "2",
+                  "port": "pwmB_e2a"
+              },
+              {
+                  "name": "load",
+                  "from": "6",
+                  "size": "2",
+                  "port": "pwmB_e3a"
+              },
+              {
+                  "name": "BD",
+                  "from": "8",
+                  "size": "2",
+                  "port": "pwmB_e4a"
+              },
+              {
+                  "name": "AD",
+                  "from": "10",
+                  "size": "2",
+                  "port": "pwmB_e5a"
+              }
+            ]
+        }
+    ],
+    "interface": [
+        {
+            "name": "pwmA",
+            "port": "pwmA",
+            "dir": "output",
+            "size": "1"
+        },
+        {
+            "name": "pwmB",
+            "port": "pwmB",
+            "dir": "output",
+            "size": "1"
+        }
+    ],
+    "clock": "clk",
+    "reset": {
+        "name": "rst_n",
+        "pol": "0"
+    },
+    "ports":[
+      {"name": "pwmA", "size": "1", "dir":"output"},
+      {"name": "pwmB", "size": "1", "dir":"output"},
+      {"name": "cmpA", "size": "32", "dir":"input"},
+      {"name": "cmpB", "size": "32", "dir":"input"},
+      {"name": "load", "size": "32", "dir":"input"},
+      {"name": "clkdiv", "size": "4", "dir":"input"},
+      {"name": "cntr_mode", "size": "1", "dir":"input"},
+      {"name": "enA", "size": "1", "dir":"input"},
+      {"name": "enB", "size": "1", "dir":"input"},
+      {"name": "invA", "size": "1", "dir":"input"},
+      {"name": "invB", "size": "1", "dir":"input"},
+      {"name": "pwmA_e0a", "size": "2", "dir":"input"},
+      {"name": "pwmA_e1a", "size": "2", "dir":"input"},
+      {"name": "pwmA_e2a", "size": "2", "dir":"input"},
+      {"name": "pwmA_e3a", "size": "2", "dir":"input"},
+      {"name": "pwmA_e4a", "size": "2", "dir":"input"},
+      {"name": "pwmA_e5a", "size": "2", "dir":"input"},
+      {"name": "pwmB_e0a", "size": "2", "dir":"input"},
+      {"name": "pwmB_e1a", "size": "2", "dir":"input"},
+      {"name": "pwmB_e2a", "size": "2", "dir":"input"},
+      {"name": "pwmB_e3a", "size": "2", "dir":"input"},
+      {"name": "pwmB_e4a", "size": "2", "dir":"input"},
+      {"name": "pwmB_e5a", "size": "2", "dir":"input"}
+    ]
+}

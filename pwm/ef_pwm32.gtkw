@@ -1,0 +1,47 @@
+[*]
+[*] GTKWave Analyzer v3.3.107 (w)1999-2020 BSI
+[*] Sat Jul 29 15:58:49 2023
+[*]
+[dumpfile] "/Users/shalan/work/iss-toy-isa/pySoC/pwm/pwm.vcd"
+[dumpfile_mtime] "Sat Jul 29 15:54:40 2023"
+[dumpfile_size] 37091
+[savefile] "/Users/shalan/work/iss-toy-isa/pySoC/pwm/ef_pwm32.gtkw"
+[timestart] 0
+[size] 1666 903
+[pos] -1 -1
+*-10.716225 705 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1
+[treeopen] tb.
+[sst_width] 193
+[signals_width] 168
+[sst_expanded] 1
+[sst_vpaned_height] 264
+@28
+tb.clk
+tb.rst_n
+@22
+tb.clkdiv[3:0]
+@28
+tb.duv.clken
+@8022
+tb.duv.cntr[31:0]
+@20000
+-
+@24
+tb.duv.cntr[31:0]
+@28
+tb.duv.cmp_au
+tb.duv.cmp_ad
+tb.duv.cmp_bu
+tb.duv.cmp_bd
+tb.duv.cmp_zero
+tb.duv.cmp_load
+tb.duv.pwmA_e0a[1:0]
+tb.duv.pwmA_e1a[1:0]
+tb.duv.pwmA_e2a[1:0]
+tb.duv.pwmA_e3a[1:0]
+tb.duv.pwmA_e4a[1:0]
+tb.duv.pwmA_e5a[1:0]
+tb.duv.pwmA
+tb.duv.pwmB
+[pattern_trace] 1
+[pattern_trace] 0
