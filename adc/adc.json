@@ -1,0 +1,276 @@
+{
+    "name": "ef_sar_Adc8",
+    "description": "8CH 8-bit SAR ADC",
+    "repo": "github.com/efabless/ef_sar_adc8",
+    "author": "Mohamed Shalan",
+    "email": "mshalan@efabless.com",
+    "version": "0.9",
+    "date": "7-30-2023",
+    "license": "Apache 2.0",
+    "category": "digital",
+    "type": "firm",
+    "status": "np",
+    "width": "0",
+    "height": "0",
+    "cell_count": "730",
+    "regs": [
+        {
+            "name": "TCTRL",
+            "size": "32",
+            "mode": "rw",
+            "init": "0",
+            "fields": [
+                {
+                    "name": "clkdiv",
+                    "from": "0",
+                    "size": "8",
+                    "port": "clkdiv"
+                },
+                {
+                    "name": "sample_div",
+                    "from": "8",
+                    "size": "8",
+                    "port": "sample_div"
+                },
+                {
+                    "name": "swidth",
+                    "from": "16",
+                    "size": "4",
+                    "port": "swidth"
+                }
+            ]
+        },
+        {
+            "name": "CHSEL",
+            "size": "3",
+            "mode": "rw",
+            "init": "0",
+            "fields": [
+                {
+                    "name": "channel",
+                    "from": "0",
+                    "size": "3",
+                    "port": "ch_sel_in"
+                }
+            ]  
+        },
+        {
+            "name": "CHSEL",
+            "size": "3",
+            "mode": "rw",
+            "init": "0",
+            "fields": [
+                {
+                    "name": "channel",
+                    "from": "0",
+                    "size": "3",
+                    "port": "ch_sel_in"
+                }
+            ]  
+        },
+        {
+            "name": "CTRL",
+            "size": "2",
+            "mode": "rw",
+            "init": "0",
+            "fields": [
+                {
+                    "name": "en",
+                    "from": "0",
+                    "size": "1",
+                    "port": "en"
+                },
+                {
+                    "name": "seqen",
+                    "from": "1",
+                    "size": "1",
+                    "port": "seq_en"
+                }
+            ]
+        },
+        {
+            "name": "SOC",
+            "size": "1",
+            "mode": "rw",
+            "init": "0",
+            "fields": [
+                {
+                    "name": "soc",
+                    "from": "0",
+                    "size": "1",
+                    "port": "soc"
+                }
+            ]
+        },
+        {
+            "name": "SEQCTRL0",
+            "size": "32",
+            "mode": "rw",
+            "init": "0",
+            "fields": [
+                {
+                    "name": "seq0",
+                    "from": "0",
+                    "size": "5",
+                    "port": "seq0"
+                },
+                {
+                    "name": "seq1",
+                    "from": "8",
+                    "size": "5",
+                    "port": "seq1"
+                },
+                {
+                    "name": "seq2",
+                    "from": "16",
+                    "size": "5",
+                    "port": "seq2"
+                },
+                {
+                    "name": "seq3",
+                    "from": "24",
+                    "size": "5",
+                    "port": "seq3"
+                }
+            ]
+        },
+        {
+            "name": "SEQCTRL1",
+            "size": "32",
+            "mode": "rw",
+            "init": "0",
+            "fields": [
+                {
+                    "name": "seq4",
+                    "from": "0",
+                    "size": "5",
+                    "port": "seq4"
+                },
+                {
+                    "name": "seq5",
+                    "from": "8",
+                    "size": "5",
+                    "port": "seq5"
+                },
+                {
+                    "name": "seq6",
+                    "from": "16",
+                    "size": "5",
+                    "port": "seq6"
+                },
+                {
+                    "name": "seq7",
+                    "from": "24",
+                    "size": "5",
+                    "port": "seq7"
+                }
+            ]
+        },
+        {
+            "name": "DATA",
+            "size": "8",
+            "mode": "ro",
+            "fifo": "true",
+            "fifo_rd_port": "rd",
+            "fifo_wr_port": "",
+            "fields": [
+                {
+                    "name": "data",
+                    "from": "0",
+                    "size": "8",
+                    "port": "data"
+                }
+            ]
+        },
+        
+        {
+            "name": "FIFOTHRESHOLD",
+            "size": "4",
+            "mode": "rw",
+            "init": "0",
+            "fields": [
+                {
+                    "name": "threshold",
+                    "from": "0",
+                    "size": "8",
+                    "port": "fifo_threshold"
+                }
+            ]
+        }
+    ],
+    "fifos":[
+        {"size":"16", "reg":"data", "type":"r", "port":"rd"}
+    ],
+    "interface": [
+        {
+            "name": "cmp",
+            "port": "cmp",
+            "dir": "input",
+            "size": "1"
+        },
+        {
+            "name": "sample_n",
+            "port": "sample_n",
+            "dir": "output",
+            "size": "1"
+        },
+        {
+            "name": "eoc",
+            "port": "eoc",
+            "dir": "output",
+            "size": "1"
+        },
+        {
+            "name": "ch_sel",
+            "port": "ch_sel_out",
+            "dir": "output",
+            "size": "1"
+        }
+    ],
+    "clock": "clk",
+    "reset": {
+        "name": "rst_n",
+        "pol": "0"
+    },
+    "flags": [
+        {
+            "name": "fifo_full",
+            "port": "fifo_full"
+        },
+        {
+            "name": "fifo_level",
+            "port": "fifo_above"
+        },
+        {
+            "name": "eoc",
+            "port": "eoc"
+        }
+    ],
+    "ports": [
+        {"name": "swidth", "size": "4", "dir" : "input"},
+        {"name": "clkdiv", "size": "8", "dir" : "input"},
+        {"name": "sample_div", "size": "8", "dir" : "input"},
+        {"name": "en", "size": "1", "dir" : "input"},
+        {"name": "cmp", "size": "1", "dir" : "input"},
+        {"name": "soc", "size": "1", "dir" : "input"},
+        {"name": "sample_n", "size": "1", "dir" : "output"},
+        {"name": "eoc", "size": "1", "dir" : "output"},
+        {"name": "data", "size": "8", "dir" : "output"},
+        {"name": "rd", "size": "1", "dir" : "input"},
+        {"name": "ch_sel_out", "size": "3", "dir" : "output"},
+        {"name": "ch_sel_in", "size": "3", "dir" : "input"},
+        {"name": "seq0", "size": "5", "dir" : "input"},
+        {"name": "seq1", "size": "5", "dir" : "input"},
+        {"name": "seq2", "size": "5", "dir" : "input"},
+        {"name": "seq3", "size": "5", "dir" : "input"},
+        {"name": "seq4", "size": "5", "dir" : "input"},
+        {"name": "seq5", "size": "5", "dir" : "input"},
+        {"name": "seq6", "size": "5", "dir" : "input"},
+        {"name": "seq7", "size": "5", "dir" : "input"},
+        {"name": "seq_en", "size": "1", "dir" : "input"},
+        {"name": "fifo_full", "size": "1", "dir" : "output"},
+        {"name": "fifo_threshold", "size": "4", "dir" : "input"},
+        {"name": "fifo_above", "size": "1", "dir" : "output"}
+    ]
+    
+}
