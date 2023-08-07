@@ -8,22 +8,23 @@
 `timescale			1ns/1ns
 `default_nettype	none
 
-`define		APB_BLOCK(name, init)	always @(posedge PCLK or negedge PRESETn) if(~PRESETn) name <= init;
-`define		APB_REG(name, init)		`APB_BLOCK(name, init) else if(apb_we & (PADDR==``name``_ADDR)) name <= PWDATA;
-`define		APB_ICR(sz)				`APB_BLOCK(ICR_REG, sz'b0) else if(apb_we & (PADDR==ICR_REG_ADDR)) ICR_REG <= PWDATA; else ICR_REG <= sz'd0;
+`define		WB_BLOCK(name, init)	always @(posedge clk_i or posedge rst_i) if(rst_i) name <= init;
+`define		WB_REG(name, init)		`WB_BLOCK(name, init) else if(wb_we & (adr_i==``name``_ADDR)) name <= dat_i;
+`define		WB_ICR(sz)				`WB_BLOCK(ICR_REG, sz'b0) else if(wb_we & (adr_i==ICR_REG_ADDR)) ICR_REG <= dat_i; else ICR_REG <= sz'd0;
 
-module ef_pwm32_apb (
+module EF_PWM32_wb (
 	output	wire 		pwmA,
 	output	wire 		pwmB,
-	input	wire 		PCLK,
-	input	wire 		PRESETn,
-	input	wire [31:0]	PADDR,
-	input	wire 		PWRITE,
-	input	wire 		PSEL,
-	input	wire 		PENABLE,
-	input	wire [31:0]	PWDATA,
-	output	wire [31:0]	PRDATA,
-	output	wire 		PREADY
+	input	wire 		clk_i,
+	input	wire 		rst_i,
+	input	wire [31:0]	adr_i,
+	input	wire [31:0]	dat_i,
+	output	wire [31:0]	dat_o,
+	input	wire [3:0]	sel_i,
+	input	wire 		cyc_i,
+	input	wire 		stb_i,
+	output	reg 		ack_o,
+	input	wire 		we_i
 );
 	localparam[15:0] CMPA_REG_ADDR = 16'h0000;
 	localparam[15:0] CMPB_REG_ADDR = 16'h0004;
@@ -63,13 +64,14 @@ module ef_pwm32_apb (
 	wire[1:0]	pwmB_e3a	= GENB_REG[7:6];
 	wire[1:0]	pwmB_e4a	= GENB_REG[9:8];
 	wire[1:0]	pwmB_e5a	= GENB_REG[11:10];
-	wire		apb_valid	= PSEL & PENABLE;
-	wire		apb_we	= PWRITE & apb_valid;
-	wire		apb_re	= ~PWRITE & apb_valid;
-	wire		_clk_	= PCLK;
-	wire		_rst_	= ~PRESETn;
+	wire		wb_valid	= cyc_i & stb_i;
+	wire		wb_we	= we_i & wb_valid;
+	wire		wb_re	= ~we_i & wb_valid;
+	wire[3:0]	wb_byte_sel	= sel_i & {4{wb_we}};
+	wire		_clk_	= clk_i;
+	wire		_rst_	= rst_i;
 
-	ef_pwm32 inst_to_wrap (
+	EF_PWM32 inst_to_wrap (
 		.clk(_clk_),
 		.rst_n(~_rst_),
 		.pwmA(pwmA),
@@ -97,24 +99,29 @@ module ef_pwm32_apb (
 		.pwmB_e5a(pwmB_e5a)
 	);
 
-	`APB_REG(CMPA_REG, 0)
-	`APB_REG(CMPB_REG, 0)
-	`APB_REG(LOAD_REG, 0)
-	`APB_REG(CLKDIV_REG, 0)
-	`APB_REG(CONTROL_REG, 0)
-	`APB_REG(GENA_REG, 0)
-	`APB_REG(GENB_REG, 0)
-	assign	PRDATA = 
-			(PADDR == CMPA_REG_ADDR) ? CMPA_REG :
-			(PADDR == CMPB_REG_ADDR) ? CMPB_REG :
-			(PADDR == LOAD_REG_ADDR) ? LOAD_REG :
-			(PADDR == CLKDIV_REG_ADDR) ? CLKDIV_REG :
-			(PADDR == CONTROL_REG_ADDR) ? CONTROL_REG :
-			(PADDR == GENA_REG_ADDR) ? GENA_REG :
-			(PADDR == GENB_REG_ADDR) ? GENB_REG :
+	always @ (posedge clk_i or posedge rst_i)
+		if(rst_i) ack_o <= 1'b0;
+		else
+			if(wb_valid & ~ack_o)
+				ack_o <= 1'b1;
+			else
+				ack_o <= 1'b0;
+
+	`WB_REG(CMPA_REG, 0)
+	`WB_REG(CMPB_REG, 0)
+	`WB_REG(LOAD_REG, 0)
+	`WB_REG(CLKDIV_REG, 0)
+	`WB_REG(CONTROL_REG, 0)
+	`WB_REG(GENA_REG, 0)
+	`WB_REG(GENB_REG, 0)
+	assign	dat_o = 
+			(adr_i == CMPA_REG_ADDR) ? CMPA_REG :
+			(adr_i == CMPB_REG_ADDR) ? CMPB_REG :
+			(adr_i == LOAD_REG_ADDR) ? LOAD_REG :
+			(adr_i == CLKDIV_REG_ADDR) ? CLKDIV_REG :
+			(adr_i == CONTROL_REG_ADDR) ? CONTROL_REG :
+			(adr_i == GENA_REG_ADDR) ? GENA_REG :
+			(adr_i == GENB_REG_ADDR) ? GENB_REG :
 			32'hDEADBEEF;
-
-
-	assign PREADY = 1'b1;
 
 endmodule

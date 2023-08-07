@@ -1,7 +1,7 @@
 {
-    "name": "ef_pwm32",
+    "name": "EF_PWM32",
     "description": "A 32-bit 2CH PWM Generator",
-    "repo": "github.com/efabless/ef_pwm32",
+    "repo": "github.com/efabless/EF_PWM32",
     "author": "Mohamed Shalan",
     "email": "mshalan@efabless.com",
     "version": "0.9",

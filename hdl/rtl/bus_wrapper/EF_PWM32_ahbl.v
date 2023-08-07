@@ -12,7 +12,7 @@
 `define		AHB_REG(name, init)		`AHB_BLOCK(name, init) else if(ahbl_we & (last_HADDR==``name``_ADDR)) name <= HWDATA;
 `define		AHB_ICR(sz)				`AHB_BLOCK(ICR_REG, sz'b0) else if(ahbl_we & (last_HADDR==ICR_REG_ADDR)) ICR_REG <= HWDATA; else ICR_REG <= sz'd0;
 
-module ef_pwm32_ahbl (
+module EF_PWM32_ahbl (
 	output	wire 		pwmA,
 	output	wire 		pwmB,
 	input	wire 		HCLK,
@@ -85,7 +85,7 @@ module ef_pwm32_ahbl (
 	wire		_clk_	= HCLK;
 	wire		_rst_	= ~HRESETn;
 
-	ef_pwm32 inst_to_wrap (
+	EF_PWM32 inst_to_wrap (
 		.clk(_clk_),
 		.rst_n(~_rst_),
 		.pwmA(pwmA),

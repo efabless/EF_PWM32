@@ -1,5 +1,5 @@
 
-module ef_pwm32_tb;
+module EF_PWM32_tb;
     reg  clk;
     reg  rst_n;
     wire pwmA;
@@ -107,7 +107,7 @@ module ef_pwm32_tb;
         $finish;
     end
 
-    ef_pwm32 duv (
+    EF_PWM32 duv (
         .clk(clk),
         .rst_n(rst_n),
         .pwmA(pwmA),

@@ -1,4 +1,4 @@
-module ef_pwm32(
+module EF_PWM32(
     input wire  clk,
     input wire  rst_n,
     output wire pwmA,
