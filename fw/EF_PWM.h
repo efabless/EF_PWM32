@@ -54,10 +54,10 @@
 #define EF_PWM32_GENB_REG_AD		10
 #define EF_PWM32_GENB_REG_AD_LEN	2
 
-volatile unsigned int * ef_pwm32_cmpA	= (volatile unsigned int *) EF_PWM32_CMPA_REG_ADDR;
-volatile unsigned int * ef_pwm32_cmpB	= (volatile unsigned int *) EF_PWM32_CMPB_REG_ADDR;
-volatile unsigned int * ef_pwm32_load	= (volatile unsigned int *) EF_PWM32_LOAD_REG_ADDR;
-volatile unsigned int * ef_pwm32_clkdiv	= (volatile unsigned int *) EF_PWM32_CLKDIV_REG_ADDR;
-volatile unsigned int * ef_pwm32_control	= (volatile unsigned int *) EF_PWM32_CONTROL_REG_ADDR;
-volatile unsigned int * ef_pwm32_GENA	= (volatile unsigned int *) EF_PWM32_GENA_REG_ADDR;
-volatile unsigned int * ef_pwm32_GENB	= (volatile unsigned int *) EF_PWM32_GENB_REG_ADDR;
+volatile unsigned int * EF_PWM32_cmpA	= (volatile unsigned int *) EF_PWM32_CMPA_REG_ADDR;
+volatile unsigned int * EF_PWM32_cmpB	= (volatile unsigned int *) EF_PWM32_CMPB_REG_ADDR;
+volatile unsigned int * EF_PWM32_load	= (volatile unsigned int *) EF_PWM32_LOAD_REG_ADDR;
+volatile unsigned int * EF_PWM32_clkdiv	= (volatile unsigned int *) EF_PWM32_CLKDIV_REG_ADDR;
+volatile unsigned int * EF_PWM32_control	= (volatile unsigned int *) EF_PWM32_CONTROL_REG_ADDR;
+volatile unsigned int * EF_PWM32_GENA	= (volatile unsigned int *) EF_PWM32_GENA_REG_ADDR;
+volatile unsigned int * EF_PWM32_GENB	= (volatile unsigned int *) EF_PWM32_GENB_REG_ADDR;
