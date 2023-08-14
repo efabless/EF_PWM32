@@ -1,9 +1,9 @@
 {
     "info": {
         "name": "EF_PWM32",
-        "description": "UART with a programmable baud rate generator and RX/TX FIFOs",
+        "description": "A 32-bit dual channel PWM generator with a clock divider.",
         "repo": "github.com/efabless/EF_PWM32",
-        "owner": "efabless",
+        "owner": "Efabless Corp.",
         "license": "APACHE 2.0",
         "author": "Mohamed Shalan",
         "email": "mshalan@aucegypt.edu",
@@ -58,16 +58,16 @@
             ]
         },
         {
-            "name": "load",
+            "name": "top",
             "size": "32",
             "mode": "rw",
             "init": "0",
             "fields": [
                 {
-                    "name": "load",
+                    "name": "top",
                     "from": "0",
                     "size": "32",
-                    "port": "load"
+                    "port": "top"
                 }
             ]
         },
@@ -154,7 +154,7 @@
                 "port": "pwmA_e2a"
             },
             {
-                "name": "load",
+                "name": "top",
                 "from": "6",
                 "size": "2",
                 "port": "pwmA_e3a"
@@ -198,7 +198,7 @@
                   "port": "pwmB_e2a"
               },
               {
-                  "name": "load",
+                  "name": "top",
                   "from": "6",
                   "size": "2",
                   "port": "pwmB_e3a"
@@ -242,7 +242,7 @@
       {"name": "pwmB", "size": "1", "dir":"output"},
       {"name": "cmpA", "size": "32", "dir":"input"},
       {"name": "cmpB", "size": "32", "dir":"input"},
-      {"name": "load", "size": "32", "dir":"input"},
+      {"name": "top", "size": "32", "dir":"input"},
       {"name": "clkdiv", "size": "4", "dir":"input"},
       {"name": "cntr_mode", "size": "1", "dir":"input"},
       {"name": "enA", "size": "1", "dir":"input"},
