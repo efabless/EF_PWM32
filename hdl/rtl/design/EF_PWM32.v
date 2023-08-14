@@ -5,7 +5,7 @@ module EF_PWM32(
     output wire pwmB,
     input wire [31:0] cmpA,
     input wire [31:0] cmpB,
-    input wire [31:0] load,
+    input wire [31:0] top,
     input wire [ 3:0] clkdiv,
     input wire cntr_mode,
     input wire enA,
@@ -51,7 +51,7 @@ module EF_PWM32(
     
     // the counter
     reg dir;
-    wire cmp_load   = (cntr == load);
+    wire cmp_top   = (cntr == top);
     wire cmp_zero   = (cntr == 32'd0);
     wire cmp_a      = (cntr == cmpA);
     wire cmp_b      = (cntr == cmpB);
@@ -63,7 +63,7 @@ module EF_PWM32(
     always @(posedge clk or negedge rst_n)
         if(!rst_n) dir <= 1'b0;
         else if(cmp_zero) dir <= 1'b0;
-        else if(cmp_load) dir <= 1'b1;
+        else if(cmp_top) dir <= 1'b1;
     
     always @(posedge clk or negedge rst_n)
         if(!rst_n) cntr <= 32'b0;
@@ -71,7 +71,7 @@ module EF_PWM32(
             if (clken) 
                 if(cntr_mode) cntr <= dir ? cntr - 32'b1 : cntr + 32'b1;
                 else 
-                    if(cmp_load) cntr <= 32'd0; 
+                    if(cmp_top) cntr <= 32'd0; 
                     else cntr <= cntr + 32'b1;
     
     // PWM generation logic
@@ -98,7 +98,7 @@ module EF_PWM32(
                     2'b10: pwm_a <= 1'b0;
                     2'b11: pwm_a <= ~pwm_a; 
                 endcase
-            else if(cmp_load)
+            else if(cmp_top)
                 case (pwmA_e3a)
                     2'b01: pwm_a <= 1'b1;
                     2'b10: pwm_a <= 1'b0;
@@ -139,7 +139,7 @@ module EF_PWM32(
                     2'b10: pwm_b <= 1'b0;
                     2'b11: pwm_b <= ~pwm_a; 
                 endcase
-            else if(cmp_load)
+            else if(cmp_top)
                 case (pwmB_e3a)
                     2'b01: pwm_b <= 1'b1;
                     2'b10: pwm_b <= 1'b0;

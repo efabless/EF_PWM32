@@ -6,7 +6,7 @@ module EF_PWM32_tb;
     wire pwmB;
     reg [31:0] cmpA;
     reg [31:0] cmpB;
-    reg [31:0] load;
+    reg [31:0] top;
     reg [ 3:0] clkdiv;
     reg cntr_mode;
     reg enA;
@@ -39,7 +39,7 @@ module EF_PWM32_tb;
         rst_n = 0;
         clkdiv = 4'b0010;
         en = 0;
-        load = 32'd12;
+        top = 32'd12;
         cmpA = 32'd5;
         cmpB = 32'd9;
         cntr_mode = 0;
@@ -114,7 +114,7 @@ module EF_PWM32_tb;
         .pwmB(pwmB),
         .cmpA(cmpA),
         .cmpB(cmpB),
-        .load(load),
+        .top(top),
         .clkdiv(clkdiv),
         .cntr_mode(cntr_mode),
         .enA(enA),
