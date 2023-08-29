@@ -24,8 +24,8 @@
 `default_nettype	none
 
 `define		APB_BLOCK(name, init)	always @(posedge PCLK or negedge PRESETn) if(~PRESETn) name <= init;
-`define		APB_REG(name, init)		`APB_BLOCK(name, init) else if(apb_we & (PADDR==``name``_ADDR)) name <= PWDATA;
-`define		APB_ICR(sz)				`APB_BLOCK(ICR_REG, sz'b0) else if(apb_we & (PADDR==ICR_REG_ADDR)) ICR_REG <= PWDATA; else ICR_REG <= sz'd0;
+`define		APB_REG(name, init)		`APB_BLOCK(name, init) else if(apb_we & (PADDR[15:0]==``name``_ADDR)) name <= PWDATA;
+`define		APB_ICR(sz)				`APB_BLOCK(ICR_REG, sz'b0) else if(apb_we & (PADDR[15:0]==ICR_REG_ADDR)) ICR_REG <= PWDATA; else ICR_REG <= sz'd0;
 
 module EF_PWM32_apb (
 	output	wire 		pwmA,
@@ -120,13 +120,13 @@ module EF_PWM32_apb (
 	`APB_REG(GENA_REG, 0)
 	`APB_REG(GENB_REG, 0)
 	assign	PRDATA = 
-			(PADDR == CMPA_REG_ADDR) ? CMPA_REG :
-			(PADDR == CMPB_REG_ADDR) ? CMPB_REG :
-			(PADDR == TOP_REG_ADDR) ? TOP_REG :
-			(PADDR == CLKDIV_REG_ADDR) ? CLKDIV_REG :
-			(PADDR == CONTROL_REG_ADDR) ? CONTROL_REG :
-			(PADDR == GENA_REG_ADDR) ? GENA_REG :
-			(PADDR == GENB_REG_ADDR) ? GENB_REG :
+			(PADDR[15:0] == CMPA_REG_ADDR) ? CMPA_REG :
+			(PADDR[15:0] == CMPB_REG_ADDR) ? CMPB_REG :
+			(PADDR[15:0] == TOP_REG_ADDR) ? TOP_REG :
+			(PADDR[15:0] == CLKDIV_REG_ADDR) ? CLKDIV_REG :
+			(PADDR[15:0] == CONTROL_REG_ADDR) ? CONTROL_REG :
+			(PADDR[15:0] == GENA_REG_ADDR) ? GENA_REG :
+			(PADDR[15:0] == GENB_REG_ADDR) ? GENB_REG :
 			32'hDEADBEEF;
 
 
