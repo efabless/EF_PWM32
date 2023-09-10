@@ -1,5 +1,5 @@
 # EF_PWM32
-A dual channel 32-bit PWM generator with a clock divider and  Edge and Center Aligned Modes.
+A dual channel 32-bit PWM generator with a clock divider with support for both Edge and Center Alignment Modes.
 ## Description
 The PWM module is capable of producing two PWM signals on pwmA and pwmB ports. The PWM signals are generated out of a 32-bit counter which is compared to the values cmpA and cmpB. The counter has two modes of operation:
 - Mode 1 (Up/Down counting): from 0 to top then back to 0
@@ -10,7 +10,8 @@ The PWM module is capable of producing two PWM signals on pwmA and pwmB ports. T
 There 6 events (e0 to e5) while in mode 1. Four of these 6 events are available in mode 0. Each of the PWM ports can be configured to perform different actions at each one of the events. The actions are:
 - Change to high
 - Change to low
-- Toggle
+- Toggle/Invert
+- No Change
 
 ## Clocking
 There is a clock divider that can divide the system clock by 2, 4, 8 or 16. the output of this clock divider is used to clock the counter.
