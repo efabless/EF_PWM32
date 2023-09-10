@@ -248,6 +248,7 @@
       {"name": "cntr_mode", "size": "1", "dir":"input"},
       {"name": "enA", "size": "1", "dir":"input"},
       {"name": "enB", "size": "1", "dir":"input"},
+      {"name": "en", "size": "1", "dir":"input"},
       {"name": "invA", "size": "1", "dir":"input"},
       {"name": "invB", "size": "1", "dir":"input"},
       {"name": "pwmA_e0a", "size": "2", "dir":"input"},

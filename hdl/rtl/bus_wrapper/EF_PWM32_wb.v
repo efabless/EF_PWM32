@@ -98,6 +98,7 @@ module EF_PWM32_wb (
 		.cntr_mode(cntr_mode),
 		.enA(enA),
 		.enB(enB),
+		.en(en),
 		.invA(invA),
 		.invB(invB),
 		.pwmA_e0a(pwmA_e0a),
