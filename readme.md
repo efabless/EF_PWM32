@@ -61,9 +61,9 @@ AHB-Lite, APB and WB bus wrappers are provided.
 | CMPB | 32 | RW | 0x04 | 0x00000000 | Compare B Register |
 | TOP | 32 | RW | 0x08 | 0x00000000 | Top Register |
 | CLKDIV | 4 | RW | 0x0C | 0x00000000 | Clock Divider:<br> 0001 /2<br> 0010 /4<br> 0100 /8<br> 1000 /16 |
-| CONTROL | 6 | RW | 0x10 | 0x00000000 | TControl Register: <br> 0 : PWM Enable<br> 1 : Channel A Enable * <br> 2 : Channel B enable <sup>*</sup><br> 3 : Channel A Inversion<br> 4 : Channel B Inversion<br> 5: PWM counter mode (1:up/down, 0:Down)|
+| CONTROL | 6 | RW | 0x10 | 0x00000000 | TControl Register: <br> 0 : PWM Enable<br> 1 : Channel A Enable<br> 2 : Channel B enable<br> 3 : Channel A Inversion<br> 4 : Channel B Inversion<br> 5: PWM counter mode (1:up/down, 0:Down)|
 | GENA | 12 | RW | 0x14 | 0x00000000 | Gen A Action Register<br>divided into six 2-bit fields to specify an action for the six possible events. The actions are: 00: no change, 01:high, 10:low, 11:invert.<br> 1-0: e0 (counter is zero)<br> 3-2: e1 (counter is matching CMPA; up counting)<br> 5-4: e2 (counter is matching CMPB; upcounting)<br> 7-6: e3 (counter is matchinp top)<br> 9-8: e4 (counter is matching CMPB; down counting)<br>11-10: e5 (counter is matching CMPA; down counting )|
 | GENB | 12 | RW | 0x18 | 0x00000000 | Gen B Action Register<br>divided into six 2-bit fields to specify an action for the six possible events. The actions are: 00: no change, 01:high, 10:low, 11:invert.<br> 1-0: e0 (counter is zero)<br> 3-2: e1 (counter is matching CMPA; up counting)<br> 5-4: e2 (counter is matching CMPB; upcounting)<br> 7-6: e3 (counter is matchinp top)<br> 9-8: e4 (counter is matching CMPB; down counting)<br>11-10: e5 (counter is matching CMPA; down counting )|
 
-<sup>*</sup> Not implemented and has no effect.
+
 
