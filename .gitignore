@@ -162,3 +162,5 @@ cython_debug/
 # Verilog
 a.out
 *.vcd
+util
+tmp
