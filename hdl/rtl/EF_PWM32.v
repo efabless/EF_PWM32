@@ -55,7 +55,8 @@ module EF_PWM32(
         if(!rst_n)
             clkdiv_ctr <= 4'b0;
         else 
-            clkdiv_ctr <= clkdiv_ctr + 4'b1;
+            if(en)
+                clkdiv_ctr <= clkdiv_ctr + 4'b1;
     wire clkdiv2 = clkdiv[0];
     wire clkdiv4 = clkdiv[1] & (clkdiv_ctr[0] == 1'b1);
     wire clkdiv8 = clkdiv[2] & (clkdiv_ctr[1:0] == 2'b11);
@@ -68,9 +69,8 @@ module EF_PWM32(
             if(clken) 
                 clken <= 1'b0;
             else 
-                if(en) 
-                    if(clkdiv2 | clkdiv4 | clkdiv8 | clkdiv16)
-                        clken <= 1'b1;
+                if(clkdiv2 | clkdiv4 | clkdiv8 | clkdiv16)
+                    clken <= 1'b1;
     
     // the counter
     reg [31:0] cntr;
@@ -104,7 +104,7 @@ module EF_PWM32(
     always @(posedge clk or negedge rst_n)
         if(!rst_n) 
             pwm_a <= 1'b0;
-        else if(clken) begin
+        else if(clken & enA) begin
             if(cmp_zero)
                 case (pwmA_e0a)
                     2'b01: pwm_a <= 1'b1;
@@ -145,7 +145,7 @@ module EF_PWM32(
 
     always @(posedge clk or negedge rst_n)
         if(!rst_n) pwm_b <= 1'b0;
-        else if(clken) begin
+        else if(clken & enB) begin
             if(cmp_zero)
                 case (pwmB_e0a)
                     2'b01: pwm_b <= 1'b1;
