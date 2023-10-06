@@ -1,5 +1,7 @@
 # EF_PWM32
 A dual channel 32-bit PWM generator with a clock divider and support for both Edge and Center Alignment Modes.
+
+The generator comes with bus wrapper for AHB lite, APB and WB (classic) buses.
 ## Description
 The PWM module is capable of producing two PWM signals on pwmA and pwmB ports. The PWM signals are generated out of a 32-bit counter which is compared to the values cmpA and cmpB. The counter has two modes of operation:
 - Mode 1 (Up/Down counting): from 0 to top then back to 0
@@ -29,7 +31,7 @@ There is a clock divider that can divide the system clock by 2, 4, 8 or 16. the 
 | cmpA| input| 32|Channel A Compare |
 | cmpB| input| 32|Channel B Compare |
 | top| input| 32|Counter top value|
-| clkdiv  |  input| 4  | Clock Divider:<br> - 0001 /2<br> - 0010 /4<br> - 0100 /8<br> - 1000 /16  |
+| clkdiv  |  input| 4  | Clock Divider:<br> - `0001` : $1/2$<br> - `0010` : $1/4$<br> - `0100` : $1/8$<br> - `1000` : $1/16$  |
 | cntr_mode|input|1|  1 - up/down <br> 0 - Down|
 |enA|input|1| Channel A enable|
 |enB|input|1| Channel B enable|
