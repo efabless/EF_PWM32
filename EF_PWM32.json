@@ -20,13 +20,21 @@
         ],
         "type": "soft",
         "status": "verified",
-        "cell_count": "730",
+        "cell_count": "1000",
         "width": "0.0",
         "height": "0.0",
         "technology": "n/a",
-        "clock_freq_mhz": "10",
+        "clock_freq_mhz": "50",
         "supply_voltage": [
             "n/a"
+        ],
+        "tech":[
+            "sky130":{
+                "gl_netlist": True,
+                "cell_count": "1010",
+                "is":"2.35",
+                "id":"7844"
+            }
         ]
     },
     "regs": [
