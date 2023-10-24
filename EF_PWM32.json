@@ -30,7 +30,7 @@
         ],
         "tech":[
             "sky130":{
-                "gl_netlist": True,
+                "gl_netlist": true,
                 "cell_count": "1010",
                 "is":"2.35",
                 "id":"7844"
