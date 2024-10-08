@@ -152,7 +152,7 @@ class PWM32_VIP(ref_model):
                     pattern[i] = (1, pattern[i][1])
             return pattern
         def process_action(actions, is_inverted):
-            compare_vals = {"cmpA":self.regs.read_reg_value("CMPA"), "cmpB":self.regs.read_reg_value("CMPB"), "top":self.regs.read_reg_value("top")}
+            compare_vals = {"cmpA":self.regs.read_reg_value("CMPA"), "cmpB":self.regs.read_reg_value("CMPB"), "top":self.regs.read_reg_value("TOP")}
             actions_types = ["no change", "high", "low", "inverted"]
             clk_div = self.regs.read_reg_value("clkdiv") * 2
             action_length = [compare_vals["cmpA"], compare_vals["cmpB"]-compare_vals["cmpA"], compare_vals["top"]-compare_vals["cmpB"] ]
