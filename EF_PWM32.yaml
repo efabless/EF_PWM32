@@ -1,0 +1,227 @@
+---
+info:
+  name: EF_PWM32
+  description: A 32-bit dual channel PWM generator with a clock divider.
+  repo: https://github.com/efabless/EF_PWM32
+  owner: Efabless Corp.
+  license: APACHE 2.0
+  author: Mohamed Shalan
+  email: mshalan@efabless.com
+  version: v1.0.0
+  date: 3-18-2023
+  category: digital
+  tags:
+  - peripheral
+  - PWM
+  - control
+  bus:
+  - generic
+  type: soft
+  status: verified
+  cell_count: '1000'
+  width: '0.0'
+  height: '0.0'
+  technology: n/a
+  clock_freq_mhz: '50'
+  supply_voltage:
+  - n/a
+registers:
+- name: CMPA
+  size: 32
+  mode: w
+  fifo: no
+  offset: 0
+  write_port: cmpA
+- name: CMPB
+  size: 32
+  mode: w
+  fifo: no
+  offset: 4
+  write_port: cmpB
+- name: TOP
+  size: 32
+  mode: w
+  fifo: no
+  offset: 8
+  write_port: top
+- name: CLKDIV
+  size: 4
+  mode: w
+  fifo: no
+  offset: 12
+  write_port: clkdiv
+- name: CONTROL
+  size: 6
+  mode: w
+  fifo: no
+  offset: 16
+  fields:
+  - name: en
+    bit_offset: 0
+    bit_width: 1
+    write_port: en
+  - name: pwmA_en
+    bit_offset: 1
+    bit_width: 1
+    write_port: enA
+  - name: pwmB_en
+    bit_offset: 2
+    bit_width: 1
+    write_port: enB
+  - name: pwmA_inv
+    bit_offset: 3
+    bit_width: 1
+    write_port: invA
+  - name: pwmB_inv
+    bit_offset: 4
+    bit_width: 1
+    write_port: invB
+  - name: cntr_mode
+    bit_offset: 5
+    bit_width: 1
+    write_port: cntr_mode
+- name: GENA
+  size: 12
+  mode: w
+  fifo: no
+  offset: 20
+  fields:
+  - name: zero
+    bit_offset: 0
+    bit_width: 2
+    write_port: pwmA_e0a
+  - name: AUP
+    bit_offset: 2
+    bit_width: 2
+    write_port: pwmA_e1a
+  - name: BUP
+    bit_offset: 4
+    bit_width: 2
+    write_port: pwmA_e2a
+  - name: top
+    bit_offset: 6
+    bit_width: 2
+    write_port: pwmA_e3a
+  - name: BD
+    bit_offset: 8
+    bit_width: 2
+    write_port: pwmA_e4a
+  - name: AD
+    bit_offset: 10
+    bit_width: 2
+    write_port: pwmA_e5a
+- name: GENB
+  size: 12
+  mode: w
+  fifo: no
+  offset: 24
+  fields:
+  - name: zero
+    bit_offset: 0
+    bit_width: 2
+    write_port: pwmB_e0a
+  - name: AUP
+    bit_offset: 2
+    bit_width: 2
+    write_port: pwmB_e1a
+  - name: BUP
+    bit_offset: 4
+    bit_width: 2
+    write_port: pwmB_e2a
+  - name: top
+    bit_offset: 6
+    bit_width: 2
+    write_port: pwmB_e3a
+  - name: BD
+    bit_offset: 8
+    bit_width: 2
+    write_port: pwmB_e4a
+  - name: AD
+    bit_offset: 10
+    bit_width: 2
+    write_port: pwmB_e5a
+
+external_interface:
+- name: pwmA
+  port: pwmA
+  direction: output
+  width: 1
+- name: pwmB
+  port: pwmB
+  direction: output
+  width: 1
+
+clock:
+  name: clk
+
+reset:
+  name: rst_n
+  level: 0
+
+ports:
+- name: cmpA
+  width: 32
+  direction: input
+- name: cmpB
+  width: 32
+  direction: input
+- name: top
+  width: 32
+  direction: input
+- name: clkdiv
+  width: 4
+  direction: input
+- name: cntr_mode
+  width: 1
+  direction: input
+- name: enA
+  width: 1
+  direction: input
+- name: enB
+  width: 1
+  direction: input
+- name: en
+  width: 1
+  direction: input
+- name: invA
+  width: 1
+  direction: input
+- name: invB
+  width: 1
+  direction: input
+- name: pwmA_e0a
+  width: 2
+  direction: input
+- name: pwmA_e1a
+  width: 2
+  direction: input
+- name: pwmA_e2a
+  width: 2
+  direction: input
+- name: pwmA_e3a
+  width: 2
+  direction: input
+- name: pwmA_e4a
+  width: 2
+  direction: input
+- name: pwmA_e5a
+  width: 2
+  direction: input
+- name: pwmB_e0a
+  width: 2
+  direction: input
+- name: pwmB_e1a
+  width: 2
+  direction: input
+- name: pwmB_e2a
+  width: 2
+  direction: input
+- name: pwmB_e3a
+  width: 2
+  direction: input
+- name: pwmB_e4a
+  width: 2
+  direction: input
+- name: pwmB_e5a
+  width: 2
+  direction: input
