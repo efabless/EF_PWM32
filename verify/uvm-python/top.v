@@ -13,7 +13,7 @@ module top();
         wire [31:0]	PWDATA;
         wire [31:0]	PRDATA;
         wire 		PREADY;
-        EF_PWM32_APB uut( .pwmA(pwmA), .pwmB(pwmB), .PCLK(PCLK), .PRESETn(PRESETn), .PADDR(PADDR), .PWRITE(PWRITE), .PSEL(PSEL), .PENABLE(PENABLE), .PWDATA(PWDATA), .PRDATA(PRDATA), .PREADY(PREADY));
+        EF_PWM32_APB uut( .pwmA(pwmA), .pwmB(pwmB), .PCLK(CLK), .PRESETn(PRESETn), .PADDR(PADDR), .PWRITE(PWRITE), .PSEL(PSEL), .PENABLE(PENABLE), .PWDATA(PWDATA), .PRDATA(PRDATA), .PREADY(PREADY));
     `endif // BUS_TYPE_APB
     `ifdef BUS_TYPE_AHB
         wire [31:0]	HADDR;

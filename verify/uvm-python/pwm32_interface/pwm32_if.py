@@ -8,5 +8,5 @@ class pwm32_if(sv_if):
     # wire 		pwmB;
 
     def __init__(self, dut):
-        bus_map = {"PCLK": "PCLK", "pwmA": "pwmA", "pwmB": "pwmB"}
+        bus_map = {"PCLK": "CLK", "pwmA": "pwmA", "pwmB": "pwmB"}
         super().__init__(dut, "", bus_map)
