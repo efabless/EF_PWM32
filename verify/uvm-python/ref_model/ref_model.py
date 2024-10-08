@@ -5,36 +5,36 @@ from uvm.base.uvm_object_globals import UVM_HIGH, UVM_LOW, UVM_MEDIUM
 from uvm.macros import uvm_component_utils, uvm_fatal, uvm_info
 from uvm.base.uvm_config_db import UVMConfigDb
 from uvm.tlm1.uvm_analysis_port import UVMAnalysisExport
-from EF_UVM.vip.vip import VIP 
-from EF_UVM.wrapper_env.wrapper_item import wrapper_bus_item
+from EF_UVM.ref_model.ref_model import ref_model
+from EF_UVM.bus_env.bus_item import bus_item, bus_irq_item
 from pwm32_item.pwm32_item import pwm32_item
 
 
-class PWM32_VIP(VIP):
+class PWM32_VIP(ref_model):
     def __init__(self, name="PWM32_VIP", parent=None):
         super().__init__(name, parent)
 
     def build_phase(self, phase):
         super().build_phase(phase)
         arr = []
-        if (not UVMConfigDb.get(self, "", "wrapper_regs", arr)):
+        if not UVMConfigDb.get(self, "", "bus_regs", arr):
             uvm_fatal(self.tag, "No json file wrapper regs")
         else:
             self.regs = arr[0]
-    
+
     def write_bus(self, tr):
         uvm_info(self.tag, "Vip write: " + tr.convert2string(), UVM_MEDIUM)
-        if tr.reset:
-            self.wrapper_bus_export.write(tr)
+        if tr.kind == bus_item.RESET:
+            self.bus_bus_export.write(tr)
             return
-        if tr.kind == wrapper_bus_item.WRITE:
+        if tr.kind == bus_item.WRITE:
             self.regs.write_reg_value(tr.addr, tr.data)
-            self.wrapper_bus_export.write(tr)
-        elif tr.kind == wrapper_bus_item.READ:
+            self.bus_bus_export.write(tr)
+        elif tr.kind == bus_item.READ:
             data = self.regs.read_reg_value(tr.addr)
             td = tr.do_clone()
             td.data = data
-            self.wrapper_bus_export.write(td)
+            self.bus_bus_export.write(td)
 
     def write_ip(self, tr):
         uvm_info(self.tag, "ip Vip write: " + tr.convert2string(), UVM_MEDIUM)

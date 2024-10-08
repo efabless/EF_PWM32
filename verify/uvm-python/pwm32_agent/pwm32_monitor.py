@@ -21,14 +21,14 @@ class pwm32_monitor(ip_monitor):
 
     async def sample_pwmA(self):
         # wait until clk isn't 0
-        while self.regs.read_reg_value("clkdiv") == 0:
+        while self.regs.read_reg_value("CLKDIV") == 0:
             await ClockCycles(self.vif.PCLK, 1)
         while True:
             await Edge(self.vif.pwmA)
             old_val = self.vif.pwmA.value
             count = 0
             pattern_int = []
-            clk_div = self.regs.read_reg_value("clkdiv") * 2
+            clk_div = self.regs.read_reg_value("CLKDIV") * 2
             max_count = 0xFF * clk_div * 10  # large possible value for top * number of div cycles * 5
             count_sum = 0
             extracted_pattern = None
@@ -61,14 +61,14 @@ class pwm32_monitor(ip_monitor):
 
     async def sample_pwmB(self):
         # wait until clk isn't 0
-        while self.regs.read_reg_value("clkdiv") == 0:
+        while self.regs.read_reg_value("CLKDIV") == 0:
             await ClockCycles(self.vif.PCLK, 1)
         while True:
             await Edge(self.vif.pwmB)
             old_val = self.vif.pwmB.value
             count = 0
             pattern_int = []
-            clk_div = self.regs.read_reg_value("clkdiv") * 2
+            clk_div = self.regs.read_reg_value("CLKDIV") * 2
             max_count = 0xFF * clk_div * 10  # large possible value for top * number of div cycles * 5
             count_sum = 0
             extracted_pattern = None
