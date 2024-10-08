@@ -18,6 +18,8 @@ class pwmA_try(bus_seq_base):
         await super().body()
         three_rand = sorted(random.sample(range(1, 0xFF), 3))
         # enable control
+        await self.send_req(is_write=True, reg="CLKGATE", data_condition=lambda data: data == 1)
+        
         await self.send_req(is_write=True, reg="CLKDIV", data_condition=lambda data: data in [0b1, 0b10, 0b100, 0b1000])
         await self.send_req(is_write=True, reg="TOP", data_condition=lambda data: data == three_rand[2])
         await self.send_req(is_write=True, reg="GENA")
