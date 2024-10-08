@@ -152,14 +152,14 @@ class PWM32_VIP(ref_model):
                     pattern[i] = (1, pattern[i][1])
             return pattern
         def process_action(actions, is_inverted):
-            compare_vals = {"cmpA":self.regs.read_reg_value("cmpA"), "cmpB":self.regs.read_reg_value("cmpB"), "top":self.regs.read_reg_value("top")}
+            compare_vals = {"cmpA":self.regs.read_reg_value("CMPA"), "cmpB":self.regs.read_reg_value("CMPB"), "top":self.regs.read_reg_value("top")}
             actions_types = ["no change", "high", "low", "inverted"]
             clk_div = self.regs.read_reg_value("clkdiv") * 2
             action_length = [compare_vals["cmpA"], compare_vals["cmpB"]-compare_vals["cmpA"], compare_vals["top"]-compare_vals["cmpB"] ]
             action_length += action_length[::-1]
             action_length = [val * clk_div for val in action_length]
             actions = [(actions_types[type], action_length[index]) for index, type in enumerate(actions)]
-            mode = (self.regs.read_reg_value("control") >> 5) & 0b1
+            mode = (self.regs.read_reg_value("CONTROL") >> 5) & 0b1
             if mode == 0:
                 actions = actions[:3] + [(actions[3][0], clk_div)]
             uvm_info(self.tag, f"actions: {actions}", UVM_MEDIUM)
@@ -173,16 +173,16 @@ class PWM32_VIP(ref_model):
 
         if source == pwm32_item.pwmA:
             # check if pwmA is disabled don't send patterns
-            if self.regs.read_reg_value("control") & 0b11 != 0b11:
+            if self.regs.read_reg_value("CONTROL") & 0b11 != 0b11:
                 return None
             actions = [(self.regs.read_reg_value("GENA") >> i) & 0b11 for i in range(0, 12, 2)]
-            is_inverted = (self.regs.read_reg_value("control") >> 3) & 0b1
+            is_inverted = (self.regs.read_reg_value("CONTROL") >> 3) & 0b1
             return process_action(actions, is_inverted)
         elif source == pwm32_item.pwmB:
-            if self.regs.read_reg_value("control") & 0b101 != 0b101:
+            if self.regs.read_reg_value("CONTROL") & 0b101 != 0b101:
                 return None
             actions = [(self.regs.read_reg_value("GENB") >> i) & 0b11 for i in range(0, 12, 2)]
-            is_inverted = (self.regs.read_reg_value("control") >> 4) & 0b1
+            is_inverted = (self.regs.read_reg_value("CONTROL") >> 4) & 0b1
             return process_action(actions, is_inverted)
             
 
