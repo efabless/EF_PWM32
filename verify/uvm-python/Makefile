@@ -6,7 +6,7 @@ APB_FILES ?= $(PWD)/../../hdl/rtl/bus_wrappers/EF_PWM32_APB.pp.v
 WB_FILES ?= $(PWD)/../../hdl/rtl/bus_wrappers/EF_PWM32_WB.pp.v
 HDL_FILES ?= $(PWD)/../../ip/IP_Utilities/rtl/aucohl_lib.v $(PWD)/../../hdl/rtl/EF_PWM32.v 
 VERILOG_SOURCES ?=  $(PWD)/top.v $(AHB_FILES) $(APB_FILES) $(WB_FILES) $(HDL_FILES)
-RTL_MACROS ?= ""
+RTL_MACROS += ""
 BUS_TYPE ?= APB
 ifeq ($(BUS_TYPE),APB)
     RTL_MACROS += -DBUS_TYPE_APB

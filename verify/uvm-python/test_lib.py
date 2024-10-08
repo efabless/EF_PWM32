@@ -112,7 +112,7 @@ class PWM32_Try(pwm32_base_test):
         super().__init__(name, parent)
         self.tag = name
 
-    async def run_phase(self, phase):
+    async def main_phase(self, phase):
         uvm_info(self.tag, f"Starting test {self.__class__.__name__}", UVM_LOW)
         phase.raise_objection(self, f"{self.__class__.__name__} OBJECTED")
         bus_seq = pwmA_try("pwmA_try")
